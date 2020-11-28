@@ -85,7 +85,6 @@ export default {
                 alert("Could not load books");
             });
     },
-
 }
 </script>
 
