@@ -36,7 +36,8 @@
                             </v-row>
                             <v-row>
 
-                                <select v-model="book.section_id">
+                                <select v-model="book.section_id " class="select-sect">
+                                    <option value="" disabled hidden>Выберите категорию</option>
                                     <option v-for="(item,i) in sections" :key="i" :value="item.id">
                                         {{item.name}}
                                     </option>
@@ -220,5 +221,12 @@ export default {
 </script>
 
 <style>
-
+.select-sect {
+    margin-top: 5%;
+    width: 100%;
+    border-bottom: solid;
+}
+.select-sect:focus {
+    outline: none;
+}
 </style>
