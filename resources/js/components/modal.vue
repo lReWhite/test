@@ -202,6 +202,7 @@ export default {
 
     data: () => ({
         sections: [],
+        errors:[],
         book: {
             name: '',
             author: '',
@@ -227,7 +228,6 @@ export default {
     }),
 
     watch: {
-
         isAddBook: function () {
             var app = this;
             axios.get('/api/v1/section')
@@ -241,9 +241,11 @@ export default {
         },
     },
     methods: {
+        checkSection: function (e) {
+            return true;
+        },
 
-
-        isEding(){
+        isEding() {
             clearForm();
             this.isEditBook = false;
         },

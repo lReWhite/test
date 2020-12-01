@@ -2112,6 +2112,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       sections: [],
+      errors: [],
       book: {
         name: '',
         author: '',
@@ -2148,6 +2149,9 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    checkSection: function checkSection(e) {
+      return true;
+    },
     isEding: function isEding() {
       clearForm();
       this.isEditBook = false;
