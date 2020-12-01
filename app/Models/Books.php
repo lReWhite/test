@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Books extends Model
 {
-    protected $fillable = ['name', 'author', 'publishing', 'description', 'imgSrc' ];
+    protected $fillable = ['name', 'author', 'publishing', 'description', 'imgSrc','section_id'];
 
-    public function phone()
-    {
-      return $this->hasOne('App\Section');
-    }
+    // public function phone()
+    // {
+    //   return $this->hasOne('App\Section');
+    // }
 }

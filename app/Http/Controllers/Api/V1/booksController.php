@@ -13,15 +13,42 @@ class booksController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function show($id,$page)
     {
-        return Books::all();
+        
+        $itemLimit = 2;
+        $allBooks = Books::where('section_id', $id)->get()->values()->all();
+        $lenthSemi = count($allBooks);
+        $lenth =  $lenthSemi /$itemLimit;
+        $lenth = ceil($lenth);
+
+        //  dd($lenth);
+        // dd($page);
+        if ($page === '1')
+        {
+            $allBooks = Books::where('section_id', $id)->paginate($itemLimit)->values()->all();
+        }else
+        {
+            // $num = "3.14";
+            $int = (int)$page;
+            // $float = (float)$num;
+            // dd($page);
+            $allBooks = Books::where('section_id', $id)->skip(($int-1)*$itemLimit)->take($itemLimit)->get();
+        }
+        
+
+         return response() ->json([
+                 'books' => $allBooks,
+                 'lenth' => $lenth
+        ]);
+    
     }
 
-    public function show($id)
-    {
-        return Books::findOrFail($id);
-    }
+
+    // public function index($id)
+    // {
+    //    return Books::all();
+    // }
 
     public function update(Request $request, $id)
     {
@@ -31,6 +58,7 @@ class booksController extends Controller
  
         return $book;
     }
+
 
     public function store(Request $request)
     {
@@ -44,6 +72,7 @@ class booksController extends Controller
         $newBook->author  =  $request->author  ?? '';
         $newBook->publishing  =  $request->publishing  ?? '';
         $newBook->description  =  $request->description  ?? '';
+        $newBook->section_id  =  $request->section_id  ?? '';
         $newBook->img_src  =  $path ?? '';
         $newBook->save();
         return $newBook;

@@ -12,7 +12,7 @@
                     <v-btn color="green darken-1" @click="isDelet = false">
                         Отмена
                     </v-btn>
-                    <v-btn color="green darken-1" @click="isDelet = false">
+                    <v-btn color="green darken-1" @click="deleteBook()">
                         Удалить
                     </v-btn>
                 </v-card-actions>
@@ -35,7 +35,12 @@
                                 <!-- <v-file-input accept="image/*" label="Добавьте обложку" id="file" ref="file" v-on:change="handleFileUpload()"></v-file-input> -->
                             </v-row>
                             <v-row>
-                                <v-select :items="sections" label="Раздел"></v-select>
+
+                                <select v-model="book.section_id">
+                                    <option v-for="(item,i) in sections" :key="i" :value="item.id">
+                                        {{item.name}}
+                                    </option>
+                                </select>
                             </v-row>
                         </v-col>
                         <v-col>
@@ -105,6 +110,7 @@
 </template>
 
 <script>
+import Content from '../pages/content';
 export default {
 
     data: () => ({
@@ -115,33 +121,37 @@ export default {
             publishing: new Date().toISOString().substr(0, 10),
             description: '',
             image: '',
+            section_id: ''
         },
         section: {
             name: '',
             description: '',
         },
-
+        sectionSelect: '',
         imageSrc: '',
         isDelet: false,
         isAddBook: false,
+        idBook: null,
         isAddSection: false,
         menu2: false,
         defaultSrc: 'https://png.pngtree.com/png-clipart/20190118/ourlarge/pngtree-book-hand-drawn-book-five-books-open-png-image_447137.jpg',
     }),
 
-    created: function() {
-
-        axios.get('/api/v1/section')
-            .then(function (resp) {
-                 console.log(resp);
-                app.sections = resp.data;
-            })
-            .catch(function (resp) {
-                console.log(resp);
-                alert("Could not load books");
-            });
+    watch: {
+        isAddBook: function () {
+            var app = this;
+            axios.get('/api/v1/section')
+                .then(function (resp) {
+                    app.sections = resp.data;
+                })
+                .catch(function (resp) {
+                    console.log(resp);
+                    alert("Could not load books");
+                });
+        },
     },
     methods: {
+
         handleFileUpload() {
             this.imageSrc = this.$refs.file.files[0];
         },
@@ -166,6 +176,7 @@ export default {
             app.book.image = app.imageSrc;
 
             let formData = new FormData();
+            formData.append('section_id', app.book.section_id)
             formData.append('name', app.book.name)
             formData.append('author', app.book.author)
             formData.append('publishing', app.book.publishing)
@@ -183,8 +194,26 @@ export default {
                     console.log(resp);
                     alert("Could not create your book");
                 });
-            // isAddBook = false
+        },
+        isDelete(id) {
+            this.isDelet = true;
+            this.idBook = id;
+        },
+        deleteBook() {
+            var app = this;
+            axios.delete('/api/v1/books/' + app.idBook)
+                .then(function (resp) {
+                    // app.book.splice(index, 1);
+                    app.isDelet = false;
+                    alert("Книга удалена");
+                })
+                .catch(function (resp) {
+                    alert("Could not delete company");
+                });
+            // console.log(id);
+
         }
+
     },
 
 };

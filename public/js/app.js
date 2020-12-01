@@ -1908,6 +1908,7 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _pages_content__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../pages/content */ "./resources/js/pages/content/index.vue");
 //
 //
 //
@@ -2014,6 +2015,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2023,28 +2030,33 @@ __webpack_require__.r(__webpack_exports__);
         author: '',
         publishing: new Date().toISOString().substr(0, 10),
         description: '',
-        image: ''
+        image: '',
+        section_id: ''
       },
       section: {
         name: '',
         description: ''
       },
+      sectionSelect: '',
       imageSrc: '',
       isDelet: false,
       isAddBook: false,
+      idBook: null,
       isAddSection: false,
       menu2: false,
       defaultSrc: 'https://png.pngtree.com/png-clipart/20190118/ourlarge/pngtree-book-hand-drawn-book-five-books-open-png-image_447137.jpg'
     };
   },
-  created: function created() {
-    axios.get('/api/v1/section').then(function (resp) {
-      console.log(resp);
-      app.sections = resp.data;
-    })["catch"](function (resp) {
-      console.log(resp);
-      alert("Could not load books");
-    });
+  watch: {
+    isAddBook: function isAddBook() {
+      var app = this;
+      axios.get('/api/v1/section').then(function (resp) {
+        app.sections = resp.data;
+      })["catch"](function (resp) {
+        console.log(resp);
+        alert("Could not load books");
+      });
+    }
   },
   methods: {
     handleFileUpload: function handleFileUpload() {
@@ -2066,6 +2078,7 @@ __webpack_require__.r(__webpack_exports__);
       var app = this;
       app.book.image = app.imageSrc;
       var formData = new FormData();
+      formData.append('section_id', app.book.section_id);
       formData.append('name', app.book.name);
       formData.append('author', app.book.author);
       formData.append('publishing', app.book.publishing);
@@ -2080,7 +2093,21 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (resp) {
         console.log(resp);
         alert("Could not create your book");
-      }); // isAddBook = false
+      });
+    },
+    isDelete: function isDelete(id) {
+      this.isDelet = true;
+      this.idBook = id;
+    },
+    deleteBook: function deleteBook() {
+      var app = this;
+      axios["delete"]('/api/v1/books/' + app.idBook).then(function (resp) {
+        // app.book.splice(index, 1);
+        app.isDelet = false;
+        alert("Книга удалена");
+      })["catch"](function (resp) {
+        alert("Could not delete company");
+      }); // console.log(id);
     }
   }
 });
@@ -2249,18 +2276,43 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      page: 1,
       books: [],
-      sections: []
+      sections: [],
+      sectionId: null,
+      length: null
     };
+  },
+  methods: {
+    getBook: function getBook(id) {
+      this.sectionId = id;
+      var app = this;
+      axios.get('/api/v1/books/' + app.sectionId + '/' + app.page).then(function (resp) {
+        console.log(resp);
+        app.books = resp.data.books;
+        app.length = resp.data.lenth;
+      })["catch"](function (resp) {
+        console.log(resp);
+        alert("Could not load books");
+      });
+      console.log(id);
+    }
+  },
+  watch: {
+    page: function page() {
+      var app = this;
+      axios.get('/api/v1/books/' + app.sectionId + '/' + app.page).then(function (resp) {
+        console.log(resp.data.lenth);
+        app.books = resp.data.books;
+        app.length = resp.data.lenth;
+      })["catch"](function (resp) {
+        console.log(resp);
+        alert("Could not load books");
+      });
+    }
   },
   mounted: function mounted() {
     var app = this;
-    axios.get('/api/v1/books').then(function (resp) {
-      app.books = resp.data;
-    })["catch"](function (resp) {
-      console.log(resp);
-      alert("Could not load books");
-    });
     axios.get('/api/v1/section').then(function (resp) {
       app.sections = resp.data;
     })["catch"](function (resp) {
@@ -20872,7 +20924,7 @@ var render = function() {
                         attrs: { color: "green darken-1" },
                         on: {
                           click: function($event) {
-                            _vm.isDelet = false
+                            return _vm.deleteBook()
                           }
                         }
                       },
@@ -20948,18 +21000,57 @@ var render = function() {
                               })
                             ]),
                             _vm._v(" "),
-                            _c(
-                              "v-row",
-                              [
-                                _c("v-select", {
-                                  attrs: {
-                                    items: _vm.sections,
-                                    label: "Раздел"
+                            _c("v-row", [
+                              _c(
+                                "select",
+                                {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.book.section_id,
+                                      expression: "book.section_id"
+                                    }
+                                  ],
+                                  on: {
+                                    change: function($event) {
+                                      var $$selectedVal = Array.prototype.filter
+                                        .call($event.target.options, function(
+                                          o
+                                        ) {
+                                          return o.selected
+                                        })
+                                        .map(function(o) {
+                                          var val =
+                                            "_value" in o ? o._value : o.value
+                                          return val
+                                        })
+                                      _vm.$set(
+                                        _vm.book,
+                                        "section_id",
+                                        $event.target.multiple
+                                          ? $$selectedVal
+                                          : $$selectedVal[0]
+                                      )
+                                    }
                                   }
-                                })
-                              ],
-                              1
-                            )
+                                },
+                                _vm._l(_vm.sections, function(item, i) {
+                                  return _c(
+                                    "option",
+                                    { key: i, domProps: { value: item.id } },
+                                    [
+                                      _vm._v(
+                                        "\r\n                                        " +
+                                          _vm._s(item.name) +
+                                          "\r\n                                    "
+                                      )
+                                    ]
+                                  )
+                                }),
+                                0
+                              )
+                            ])
                           ],
                           1
                         ),
@@ -21482,9 +21573,17 @@ var render = function() {
                       _c(
                         "v-expansion-panel",
                         [
-                          _c("v-expansion-panel-header", [
-                            _vm._v(_vm._s(item.name))
-                          ]),
+                          _c(
+                            "v-expansion-panel-header",
+                            {
+                              on: {
+                                click: function($event) {
+                                  return _vm.getBook(item.id)
+                                }
+                              }
+                            },
+                            [_vm._v(_vm._s(item.name))]
+                          ),
                           _vm._v(" "),
                           _c("v-expansion-panel-content", [
                             _vm._v(
@@ -21571,7 +21670,7 @@ var render = function() {
                                 [
                                   _c("v-img", {
                                     attrs: {
-                                      src: item.img_src,
+                                      src: "storage/" + item.img_src,
                                       height: "125px",
                                       contain: ""
                                     }
@@ -21590,7 +21689,7 @@ var render = function() {
                             {
                               on: {
                                 click: function($event) {
-                                  _vm.$refs.mod.isDelet = true
+                                  return _vm.$refs.mod.isDelete(item.id)
                                 }
                               }
                             },
@@ -21611,7 +21710,7 @@ var render = function() {
                 { staticClass: "text-xs-center" },
                 [
                   _c("v-pagination", {
-                    attrs: { length: 4, circle: "" },
+                    attrs: { length: _vm.length, circle: "" },
                     model: {
                       value: _vm.page,
                       callback: function($$v) {
