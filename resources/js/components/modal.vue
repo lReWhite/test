@@ -1,5 +1,34 @@
 <template>
 <v-row justify="center">
+    <v-dialog v-model="isBook" max-width="290">
+        <v-card>
+            <form>
+                <v-card-title class="headline"></v-card-title>
+                <v-card-text>
+                    <v-row>
+                        <v-col>
+                            <v-img :src="'../storage/'+ book.img_src"></v-img>
+                        </v-col>
+                        <v-col>
+                            <v-row>
+                                Назвине книги {{book.name}}
+                            </v-row>
+                            <v-row>
+                                Ее автор {{book.author}}
+                            </v-row>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="green darken-1" @click="isBooking()">
+                        Отмена
+                    </v-btn>
+                </v-card-actions>
+            </form>
+        </v-card>
+    </v-dialog>
+
     <v-dialog v-model="isDelet" max-width="290">
         <v-card>
             <form>
@@ -14,6 +43,63 @@
                     </v-btn>
                     <v-btn color="green darken-1" @click="deleteBook()">
                         Удалить
+                    </v-btn>
+                </v-card-actions>
+            </form>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="isEditBook">
+        <v-card>
+            <form>
+                <v-card-title class="headline">Редактировать книгу</v-card-title>
+                <v-card-text>
+                    <v-row>
+                        <v-col>
+                            <v-row style="justify-content: center;">
+                                <img style="width: 250px;" :src="'../storage/'+ book.img_src">
+                            </v-row>
+                            <v-row>
+                                <input type="file" id="file" ref="file" v-on:change="handleFileUpload()" />
+                                <!-- <v-file-input accept="image/*" label="Добавьте обложку" id="file" ref="file" v-on:change="handleFileUpload()"></v-file-input> -->
+                            </v-row>
+                            <v-row>
+
+                                <select v-model="book.section_id " class="select-sect">
+                                    <option value="" disabled hidden>Выберите категорию</option>
+                                    <option v-for="(item,i) in sections" :key="i" :value="item.id">
+                                        {{item.name}}
+                                    </option>
+                                </select>
+                            </v-row>
+                        </v-col>
+                        <v-col>
+                            <!-- <v-text-field label="sas" v-model="book.imgSrc"></v-text-field> -->
+                            <v-text-field label="Название" v-model="book.name"></v-text-field>
+                            <v-text-field label="Автор" v-model="book.author"></v-text-field>
+                            <v-menu v-model="menu2" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-text-field v-model="book.publishing" label="Picker without buttons" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
+                                </template>
+                                <v-date-picker v-model="book.publishing" @input="menu2 = false"></v-date-picker>
+                            </v-menu>
+                            <v-textarea color="teal" v-model="book.description">
+                                <template v-slot:label>
+                                    <div>
+                                        Описание <small>(optional)</small>
+                                    </div>
+                                </template>
+                            </v-textarea>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="green darken-1" @click="isEding()">
+                        Отмена
+                    </v-btn>
+                    <v-btn color="green darken-1" @click="saveEdit()">
+                        Добавить
                     </v-btn>
                 </v-card-actions>
             </form>
@@ -66,7 +152,7 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="green darken-1" @click="isAddBook = false">
+                    <v-btn color="green darken-1" @click="isAddBooking()">
                         Отмена
                     </v-btn>
                     <v-btn color="green darken-1" @click="saveForm()">
@@ -97,7 +183,7 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="green darken-1" @click="isAddSection = false">
+                    <v-btn color="green darken-1" @click="isAddSectioning()">
                         Отмена
                     </v-btn>
                     <v-btn color="green darken-1" @click="saveFormSection()">
@@ -135,10 +221,13 @@ export default {
         idBook: null,
         isAddSection: false,
         menu2: false,
+        isBook: false,
+        isEditBook: false,
         defaultSrc: 'https://png.pngtree.com/png-clipart/20190118/ourlarge/pngtree-book-hand-drawn-book-five-books-open-png-image_447137.jpg',
     }),
 
     watch: {
+
         isAddBook: function () {
             var app = this;
             axios.get('/api/v1/section')
@@ -147,14 +236,94 @@ export default {
                 })
                 .catch(function (resp) {
                     console.log(resp);
-                    alert("Could not load books");
+                    alert("Could not load sections");
                 });
         },
     },
     methods: {
 
+
+        isEding(){
+            clearForm();
+            this.isEditBook = false;
+        },
+        isAddBooking() {
+            clearForm();
+            this.isAddBook = false;
+        },
+        isAddSectioning() {
+            clearForm();
+            this.isAddSection = false;
+        },
+        isBooking() {
+            this.isBook = false;
+            clearForm();
+        },
+
+        clearForm() {
+            this.book.name = '',
+                this.book.author = '',
+                this.book.publishing = new Date().toISOString().substr(0, 10),
+                this.book.description = '',
+                this.book.image = '',
+                this.book.section_id = ''
+        },
+        clearFormSection() {
+            this.section.name = '';
+            this.section.description = '';
+        },
+
         handleFileUpload() {
             this.imageSrc = this.$refs.file.files[0];
+        },
+
+        bookById(id) {
+            this.isBook = true;
+            this.getByIdBook(id);
+
+        },
+
+        getByIdBook(id) {
+            var app = this;
+            axios.get('/api/v1/book/' + id)
+                .then(function (resp) {
+                    app.book = resp.data;
+                    console.log(app.book)
+                })
+                .catch(function (resp) {
+                    console.log(resp);
+                    alert("Could not load sections");
+                });
+        },
+
+        editBook(id) {
+            this.isEditBook = true;
+            this.getByIdBook(id);
+            var app = this;
+            axios.get('/api/v1/section')
+                .then(function (resp) {
+                    app.sections = resp.data;
+                })
+                .catch(function (resp) {
+                    console.log(resp);
+                    alert("Could not load sections");
+                });
+        },
+
+        saveEdit() {
+            var app = this;
+            axios.post('/api/v1/bookEdit', app.book)
+                .then(function (resp) {
+                    app.book = resp.data;
+                    alert("Книга изменена");
+                    app.isEditBook = false;
+                    clearForm();
+                    // console.log(app.book)
+                })
+                .catch(function (resp) {
+                    console.log(resp);
+                    alert("Could not load sections");
+                });
         },
 
         saveFormSection() {
@@ -163,7 +332,8 @@ export default {
             var newSection = app.section;
             axios.post('/api/v1/section', newSection)
                 .then(function (resp) {
-                    app.isAddSection = false
+                    app.isAddSection = false;
+                    clearForm();
                 })
                 .catch(function (resp) {
                     console.log(resp);
@@ -190,6 +360,7 @@ export default {
                 })
                 .then(function (resp) {
                     app.isAddBook = false
+
                 })
                 .catch(function (resp) {
                     console.log(resp);
@@ -226,6 +397,7 @@ export default {
     width: 100%;
     border-bottom: solid;
 }
+
 .select-sect:focus {
     outline: none;
 }

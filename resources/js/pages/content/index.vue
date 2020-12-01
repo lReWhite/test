@@ -25,7 +25,7 @@
             <v-row>
                 <v-col cols="12" v-for="(item,i) in books" :key="i">
                     <v-card class="card-book white--text">
-                        <v-layout row>
+                        <v-layout row @click="$refs.mod.bookById(item.id)">
                             <v-flex xs7>
                                 <v-card-title primary-title>
                                     <div>
@@ -42,6 +42,7 @@
                         </v-layout>
                         <v-divider light></v-divider>
                         <button @click="$refs.mod.isDelete(item.id)"> Удалить</button>
+                        <button @click="$refs.mod.editBook(item.id)"> Изменить</button>
                     </v-card>
                 </v-col>
             </v-row>

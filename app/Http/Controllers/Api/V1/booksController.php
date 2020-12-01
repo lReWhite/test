@@ -45,15 +45,15 @@ class booksController extends Controller
     }
 
 
-    // public function index($id)
-    // {
-    //    return Books::all();
-    // }
+    public function byId($id)
+    {
+        return Books::findOrFail($id);
+    }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
 
-        $book = Books::findOrFail($id);
+        $book = Books::findOrFail($request->id);
         $book->update($request->all());
  
         return $book;

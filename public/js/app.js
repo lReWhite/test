@@ -2021,6 +2021,92 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -2045,6 +2131,8 @@ __webpack_require__.r(__webpack_exports__);
       idBook: null,
       isAddSection: false,
       menu2: false,
+      isBook: false,
+      isEditBook: false,
       defaultSrc: 'https://png.pngtree.com/png-clipart/20190118/ourlarge/pngtree-book-hand-drawn-book-five-books-open-png-image_447137.jpg'
     };
   },
@@ -2055,13 +2143,73 @@ __webpack_require__.r(__webpack_exports__);
         app.sections = resp.data;
       })["catch"](function (resp) {
         console.log(resp);
-        alert("Could not load books");
+        alert("Could not load sections");
       });
     }
   },
   methods: {
+    isEding: function isEding() {
+      clearForm();
+      this.isEditBook = false;
+    },
+    isAddBooking: function isAddBooking() {
+      clearForm();
+      this.isAddBook = false;
+    },
+    isAddSectioning: function isAddSectioning() {
+      clearForm();
+      this.isAddSection = false;
+    },
+    isBooking: function isBooking() {
+      this.isBook = false;
+      clearForm();
+    },
+    clearForm: function clearForm() {
+      this.book.name = '', this.book.author = '', this.book.publishing = new Date().toISOString().substr(0, 10), this.book.description = '', this.book.image = '', this.book.section_id = '';
+    },
+    clearFormSection: function clearFormSection() {
+      this.section.name = '';
+      this.section.description = '';
+    },
     handleFileUpload: function handleFileUpload() {
       this.imageSrc = this.$refs.file.files[0];
+    },
+    bookById: function bookById(id) {
+      this.isBook = true;
+      this.getByIdBook(id);
+    },
+    getByIdBook: function getByIdBook(id) {
+      var app = this;
+      axios.get('/api/v1/book/' + id).then(function (resp) {
+        app.book = resp.data;
+        console.log(app.book);
+      })["catch"](function (resp) {
+        console.log(resp);
+        alert("Could not load sections");
+      });
+    },
+    editBook: function editBook(id) {
+      this.isEditBook = true;
+      this.getByIdBook(id);
+      var app = this;
+      axios.get('/api/v1/section').then(function (resp) {
+        app.sections = resp.data;
+      })["catch"](function (resp) {
+        console.log(resp);
+        alert("Could not load sections");
+      });
+    },
+    saveEdit: function saveEdit() {
+      var app = this;
+      axios.post('/api/v1/bookEdit', app.book).then(function (resp) {
+        app.book = resp.data;
+        alert("Книга изменена");
+        app.isEditBook = false;
+        clearForm(); // console.log(app.book)
+      })["catch"](function (resp) {
+        console.log(resp);
+        alert("Could not load sections");
+      });
     },
     saveFormSection: function saveFormSection() {
       event.preventDefault();
@@ -2069,6 +2217,7 @@ __webpack_require__.r(__webpack_exports__);
       var newSection = app.section;
       axios.post('/api/v1/section', newSection).then(function (resp) {
         app.isAddSection = false;
+        clearForm();
       })["catch"](function (resp) {
         console.log(resp);
         alert("Could not create your company");
@@ -2215,6 +2364,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_modal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../components/modal */ "./resources/js/components/modal.vue");
+//
 //
 //
 //
@@ -20925,6 +21075,101 @@ var render = function() {
         {
           attrs: { "max-width": "290" },
           model: {
+            value: _vm.isBook,
+            callback: function($$v) {
+              _vm.isBook = $$v
+            },
+            expression: "isBook"
+          }
+        },
+        [
+          _c("v-card", [
+            _c(
+              "form",
+              [
+                _c("v-card-title", { staticClass: "headline" }),
+                _vm._v(" "),
+                _c(
+                  "v-card-text",
+                  [
+                    _c(
+                      "v-row",
+                      [
+                        _c(
+                          "v-col",
+                          [
+                            _c("v-img", {
+                              attrs: { src: "../storage/" + _vm.book.img_src }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-col",
+                          [
+                            _c("v-row", [
+                              _vm._v(
+                                "\r\n                                Назвине книги " +
+                                  _vm._s(_vm.book.name) +
+                                  "\r\n                            "
+                              )
+                            ]),
+                            _vm._v(" "),
+                            _c("v-row", [
+                              _vm._v(
+                                "\r\n                                Ее автор " +
+                                  _vm._s(_vm.book.author) +
+                                  "\r\n                            "
+                              )
+                            ])
+                          ],
+                          1
+                        )
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "v-card-actions",
+                  [
+                    _c("v-spacer"),
+                    _vm._v(" "),
+                    _c(
+                      "v-btn",
+                      {
+                        attrs: { color: "green darken-1" },
+                        on: {
+                          click: function($event) {
+                            return _vm.isBooking()
+                          }
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\r\n                        Отмена\r\n                    "
+                        )
+                      ]
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            )
+          ])
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-dialog",
+        {
+          attrs: { "max-width": "290" },
+          model: {
             value: _vm.isDelet,
             callback: function($$v) {
               _vm.isDelet = $$v
@@ -20982,6 +21227,320 @@ var render = function() {
                       [
                         _vm._v(
                           "\r\n                        Удалить\r\n                    "
+                        )
+                      ]
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            )
+          ])
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-dialog",
+        {
+          model: {
+            value: _vm.isEditBook,
+            callback: function($$v) {
+              _vm.isEditBook = $$v
+            },
+            expression: "isEditBook"
+          }
+        },
+        [
+          _c("v-card", [
+            _c(
+              "form",
+              [
+                _c("v-card-title", { staticClass: "headline" }, [
+                  _vm._v("Редактировать книгу")
+                ]),
+                _vm._v(" "),
+                _c(
+                  "v-card-text",
+                  [
+                    _c(
+                      "v-row",
+                      [
+                        _c(
+                          "v-col",
+                          [
+                            _c(
+                              "v-row",
+                              { staticStyle: { "justify-content": "center" } },
+                              [
+                                _c("img", {
+                                  staticStyle: { width: "250px" },
+                                  attrs: {
+                                    src: "../storage/" + _vm.book.img_src
+                                  }
+                                })
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _c("v-row", [
+                              _c("input", {
+                                ref: "file",
+                                attrs: { type: "file", id: "file" },
+                                on: {
+                                  change: function($event) {
+                                    return _vm.handleFileUpload()
+                                  }
+                                }
+                              })
+                            ]),
+                            _vm._v(" "),
+                            _c("v-row", [
+                              _c(
+                                "select",
+                                {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.book.section_id,
+                                      expression: "book.section_id "
+                                    }
+                                  ],
+                                  staticClass: "select-sect",
+                                  on: {
+                                    change: function($event) {
+                                      var $$selectedVal = Array.prototype.filter
+                                        .call($event.target.options, function(
+                                          o
+                                        ) {
+                                          return o.selected
+                                        })
+                                        .map(function(o) {
+                                          var val =
+                                            "_value" in o ? o._value : o.value
+                                          return val
+                                        })
+                                      _vm.$set(
+                                        _vm.book,
+                                        "section_id",
+                                        $event.target.multiple
+                                          ? $$selectedVal
+                                          : $$selectedVal[0]
+                                      )
+                                    }
+                                  }
+                                },
+                                [
+                                  _c(
+                                    "option",
+                                    {
+                                      attrs: {
+                                        value: "",
+                                        disabled: "",
+                                        hidden: ""
+                                      }
+                                    },
+                                    [_vm._v("Выберите категорию")]
+                                  ),
+                                  _vm._v(" "),
+                                  _vm._l(_vm.sections, function(item, i) {
+                                    return _c(
+                                      "option",
+                                      { key: i, domProps: { value: item.id } },
+                                      [
+                                        _vm._v(
+                                          "\r\n                                        " +
+                                            _vm._s(item.name) +
+                                            "\r\n                                    "
+                                        )
+                                      ]
+                                    )
+                                  })
+                                ],
+                                2
+                              )
+                            ])
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-col",
+                          [
+                            _c("v-text-field", {
+                              attrs: { label: "Название" },
+                              model: {
+                                value: _vm.book.name,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.book, "name", $$v)
+                                },
+                                expression: "book.name"
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c("v-text-field", {
+                              attrs: { label: "Автор" },
+                              model: {
+                                value: _vm.book.author,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.book, "author", $$v)
+                                },
+                                expression: "book.author"
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c(
+                              "v-menu",
+                              {
+                                attrs: {
+                                  "close-on-content-click": false,
+                                  "nudge-right": 40,
+                                  transition: "scale-transition",
+                                  "offset-y": "",
+                                  "min-width": "290px"
+                                },
+                                scopedSlots: _vm._u([
+                                  {
+                                    key: "activator",
+                                    fn: function(ref) {
+                                      var on = ref.on
+                                      var attrs = ref.attrs
+                                      return [
+                                        _c(
+                                          "v-text-field",
+                                          _vm._g(
+                                            _vm._b(
+                                              {
+                                                attrs: {
+                                                  label:
+                                                    "Picker without buttons",
+                                                  "prepend-icon":
+                                                    "mdi-calendar",
+                                                  readonly: ""
+                                                },
+                                                model: {
+                                                  value: _vm.book.publishing,
+                                                  callback: function($$v) {
+                                                    _vm.$set(
+                                                      _vm.book,
+                                                      "publishing",
+                                                      $$v
+                                                    )
+                                                  },
+                                                  expression: "book.publishing"
+                                                }
+                                              },
+                                              "v-text-field",
+                                              attrs,
+                                              false
+                                            ),
+                                            on
+                                          )
+                                        )
+                                      ]
+                                    }
+                                  }
+                                ]),
+                                model: {
+                                  value: _vm.menu2,
+                                  callback: function($$v) {
+                                    _vm.menu2 = $$v
+                                  },
+                                  expression: "menu2"
+                                }
+                              },
+                              [
+                                _vm._v(" "),
+                                _c("v-date-picker", {
+                                  on: {
+                                    input: function($event) {
+                                      _vm.menu2 = false
+                                    }
+                                  },
+                                  model: {
+                                    value: _vm.book.publishing,
+                                    callback: function($$v) {
+                                      _vm.$set(_vm.book, "publishing", $$v)
+                                    },
+                                    expression: "book.publishing"
+                                  }
+                                })
+                              ],
+                              1
+                            ),
+                            _vm._v(" "),
+                            _c("v-textarea", {
+                              attrs: { color: "teal" },
+                              scopedSlots: _vm._u([
+                                {
+                                  key: "label",
+                                  fn: function() {
+                                    return [
+                                      _c("div", [
+                                        _vm._v(
+                                          "\r\n                                        Описание "
+                                        ),
+                                        _c("small", [_vm._v("(optional)")])
+                                      ])
+                                    ]
+                                  },
+                                  proxy: true
+                                }
+                              ]),
+                              model: {
+                                value: _vm.book.description,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.book, "description", $$v)
+                                },
+                                expression: "book.description"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "v-card-actions",
+                  [
+                    _c("v-spacer"),
+                    _vm._v(" "),
+                    _c(
+                      "v-btn",
+                      {
+                        attrs: { color: "green darken-1" },
+                        on: {
+                          click: function($event) {
+                            return _vm.isEding()
+                          }
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\r\n                        Отмена\r\n                    "
+                        )
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-btn",
+                      {
+                        attrs: { color: "green darken-1" },
+                        on: {
+                          click: function($event) {
+                            return _vm.saveEdit()
+                          }
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\r\n                        Добавить\r\n                    "
                         )
                       ]
                     )
@@ -21273,7 +21832,7 @@ var render = function() {
                         attrs: { color: "green darken-1" },
                         on: {
                           click: function($event) {
-                            _vm.isAddBook = false
+                            return _vm.isAddBooking()
                           }
                         }
                       },
@@ -21398,7 +21957,7 @@ var render = function() {
                         attrs: { color: "green darken-1" },
                         on: {
                           click: function($event) {
-                            _vm.isAddSection = false
+                            return _vm.isAddSectioning()
                           }
                         }
                       },
@@ -21703,7 +22262,14 @@ var render = function() {
                         [
                           _c(
                             "v-layout",
-                            { attrs: { row: "" } },
+                            {
+                              attrs: { row: "" },
+                              on: {
+                                click: function($event) {
+                                  return _vm.$refs.mod.bookById(item.id)
+                                }
+                              }
+                            },
                             [
                               _c(
                                 "v-flex",
@@ -21758,6 +22324,18 @@ var render = function() {
                               }
                             },
                             [_vm._v(" Удалить")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "button",
+                            {
+                              on: {
+                                click: function($event) {
+                                  return _vm.$refs.mod.editBook(item.id)
+                                }
+                              }
+                            },
+                            [_vm._v(" Изменить")]
                           )
                         ],
                         1
