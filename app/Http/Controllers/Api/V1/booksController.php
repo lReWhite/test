@@ -64,7 +64,13 @@ class booksController extends Controller
     {
         $requestData = $request->all();
         
-        $path =  $request->file('image')->store($request->title.'/image');
+        // $path =  $request->file('image')->store($request->title.'/image');
+        $patch = $request->file('image')->store('public/uploads');
+        $patch = substr($patch,7);
+        // dd($patch);
+        // Storage::disk('public')->put('filename',$request->file('image'));
+
+        
         // $requestData['imageSrc'] = $path;
         // dd($request->name);
         $newBook = new Books; 
@@ -73,7 +79,9 @@ class booksController extends Controller
         $newBook->publishing  =  $request->publishing  ?? '';
         $newBook->description  =  $request->description  ?? '';
         $newBook->section_id  =  $request->section_id  ?? '';
-        $newBook->img_src  =  $path ?? '';
+        $newBook->img_src  =  $patch ?? '';
+        // dd($patch);
+        // dd($newBook);
         $newBook->save();
         return $newBook;
     }

@@ -2269,6 +2269,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -21540,6 +21541,7 @@ var render = function() {
     [
       _c(
         "v-row",
+        { staticStyle: { "place-content": "center" } },
         [
           _c(
             "v-col",
@@ -21607,6 +21609,7 @@ var render = function() {
           _vm._v(" "),
           _c(
             "v-col",
+            { attrs: { cols: "7", md: "7" } },
             [
               _c("v-row", { staticClass: "button-wraper" }, [
                 _c(
@@ -21669,11 +21672,7 @@ var render = function() {
                                 { attrs: { xs5: "" } },
                                 [
                                   _c("v-img", {
-                                    attrs: {
-                                      src: "storage/" + item.img_src,
-                                      height: "125px",
-                                      contain: ""
-                                    }
+                                    attrs: { src: "../storage/" + item.img_src }
                                   })
                                 ],
                                 1

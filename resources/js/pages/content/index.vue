@@ -1,6 +1,6 @@
 <template>
 <div class="content">
-    <v-row>
+    <v-row style="place-content: center;">
         <v-col cols="4" md="4" class="user-cols">
             <v-row style="margin-bottom:2%">
                 <button @click="$refs.mod.isAddSection = true">Добавить новый раздел</button>
@@ -18,7 +18,7 @@
 
         </v-col>
 
-        <v-col>
+        <v-col cols="7" md="7" >
             <v-row class="button-wraper">
                 <button @click="$refs.mod.isAddBook = true">Добавить новую книгу</button>
             </v-row>
@@ -36,7 +36,8 @@
                                 </v-card-title>
                             </v-flex>
                             <v-flex xs5>
-                                <v-img :src="'storage/'+item.img_src" height="125px" contain></v-img>
+                            <!-- <v-img :src="'../storage/uploads/4wyUCVMSBQ9QeHCiTvyfQq6J39G1KqzDNbKdLSNE.jpeg'" height="125px" contain></v-img> -->
+                                <v-img :src="'../storage/'+ item.img_src"  ></v-img>
                             </v-flex>
                         </v-layout>
                         <v-divider light></v-divider>
@@ -72,7 +73,7 @@ export default {
         getBook(id) {
             this.sectionId = id;
             var app = this;
-            axios.get('/api/v1/books/' + app.sectionId +'/' + app.page )
+            axios.get('/api/v1/books/' + app.sectionId + '/' + app.page)
                 .then(function (resp) {
                     console.log(resp)
                     app.books = resp.data.books;
@@ -89,7 +90,7 @@ export default {
     watch: {
         page: function () {
             var app = this;
-            axios.get('/api/v1/books/' + app.sectionId +'/' + app.page )
+            axios.get('/api/v1/books/' + app.sectionId + '/' + app.page)
                 .then(function (resp) {
                     console.log(resp.data.lenth)
                     app.books = resp.data.books;
