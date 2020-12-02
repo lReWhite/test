@@ -294,6 +294,7 @@ export default {
         sections: [],
         errors: [],
         book: {
+            user_id: '',
             name: '',
             author: '',
             publishing: new Date().toISOString().substr(0, 10),
@@ -357,12 +358,24 @@ export default {
     },
 
     watch: {
-        isAddBook: function () {
-            var app = this;
 
-        },
+
     },
     methods: {
+        addBook(id) {
+            var app = this
+            this.book.user_id = id;
+            this.isAddBook = true;
+            axios.get('/api/v1/section')
+                .then(function (resp) {
+                    console.log('hi',resp)
+                    app.sections = resp.data;
+                })
+                .catch(function (resp) {
+                    console.log(resp);
+                    // alert("Could not load sections");
+                });
+        },
         saveEditSection() {
             var app = this;
             axios.post('/api/v1/sectionEdit', app.section)
@@ -384,7 +397,7 @@ export default {
         EditSection(id) {
             this.isEditSection = true
             var app = this;
-            axios.get('/api/v1/section/'+id)
+            axios.get('/api/v1/section/' + id)
                 .then(function (resp) {
                     app.section = resp.data;
                 })
@@ -417,6 +430,7 @@ export default {
                 this.book.description = '',
                 this.book.image = '',
                 this.book.section_id = ''
+                this.book.user_id = '';
         },
         clearFormSection() {
             this.section.name = '';
@@ -461,6 +475,7 @@ export default {
         },
 
         saveEdit() {
+
             this.$v.$touch()
             if (this.$v.book.$invalid) {
                 this.submitStatus = 'ERROR'
@@ -521,6 +536,7 @@ export default {
                 formData.append('publishing', app.book.publishing)
                 formData.append('description', app.book.description)
                 formData.append('image', app.book.image)
+                formData.append('user_id', app.book.user_id)
                 axios.post('/api/v1/books', formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'

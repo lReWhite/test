@@ -15,27 +15,40 @@ class booksController extends Controller
      */
     public function show($id,$page)
     {
-        
+        $user = response()->json(auth()->user())->getData();
         $itemLimit = 2;
-        $allBooks = Books::where('section_id', $id)->get()->values()->all();
+        // if($user->role === 'user'){
+            // $allBooks = Books::where('section_id', $id)->where('user_id',$user->id)->get()->values()->all();
+        // }elseif($user->role === 'admin'){
+            $allBooks = Books::where('section_id', $id)->get()->values()->all();
+        // }
+        
         $lenthSemi = count($allBooks);
         $lenth =  $lenthSemi /$itemLimit;
         $lenth = ceil($lenth);
 
-        //  dd($lenth);
-        // dd($page);
-        if ($page === '1')
-        {
-            $allBooks = Books::where('section_id', $id)->paginate($itemLimit)->values()->all();
-        }else
-        {
-            // $num = "3.14";
-            $int = (int)$page;
-            // $float = (float)$num;
-            // dd($page);
-            $allBooks = Books::where('section_id', $id)->skip(($int-1)*$itemLimit)->take($itemLimit)->get();
-        }
-        
+        // if($user->role === 'user'){
+        // if ($page === '1')
+        // {
+        //     $allBooks = Books::where('section_id', $id)->where('user_id',$user->id)->paginate($itemLimit)->values()->all();
+        // }else
+        // {
+        //     $int = (int)$page;
+        //     $allBooks = Books::where('section_id', $id)->where('user_id',$user->id)->skip(($int-1)*$itemLimit)->take($itemLimit)->get();
+        // }
+        // }elseif($user->role === 'admin'){
+
+            if ($page === '1')
+            {
+                $allBooks = Books::where('section_id', $id)->paginate($itemLimit)->values()->all();
+            }else
+            {
+                $int = (int)$page;
+                $allBooks = Books::where('section_id', $id)->skip(($int-1)*$itemLimit)->take($itemLimit)->get();
+            }
+
+        // }
+
 
          return response() ->json([
                  'books' => $allBooks,
@@ -63,16 +76,8 @@ class booksController extends Controller
     public function store(Request $request)
     {
         $requestData = $request->all();
-        
-        // $path =  $request->file('image')->store($request->title.'/image');
         $patch = $request->file('image')->store('public/uploads');
         $patch = substr($patch,7);
-        // dd($patch);
-        // Storage::disk('public')->put('filename',$request->file('image'));
-
-        
-        // $requestData['imageSrc'] = $path;
-        // dd($request->name);
         $newBook = new Books; 
         $newBook->name  =  $request->name  ?? '';
         $newBook->author  =  $request->author  ?? '';
@@ -80,8 +85,7 @@ class booksController extends Controller
         $newBook->description  =  $request->description  ?? '';
         $newBook->section_id  =  $request->section_id  ?? '';
         $newBook->img_src  =  $patch ?? '';
-        // dd($patch);
-        // dd($newBook);
+        $newBook->user_id  =  $request->user_id ?? '';
         $newBook->save();
         return $newBook;
     }

@@ -25,7 +25,7 @@
 
         <v-col cols="7" md="7">
             <v-row class="button-wraper">
-                <button @click="$refs.mod.isAddBook = true" v-if="user.role ==='admin'|| user.role ==='admin' ">Добавить новую книгу</button>
+                <button @click="$refs.mod.addBook(user.id)" v-if="user.role ==='admin' || user.role ==='user' ">Добавить новую книгу</button>
             </v-row>
             <v-row>
                 <v-col cols="12" v-for="(item,i) in books" :key="i">
@@ -47,7 +47,7 @@
                         </v-layout>
                         <v-divider light></v-divider>
                         <button @click="$refs.mod.isDelete(item.id)"> Удалить</button>
-                        <button @click="$refs.mod.editBook(item.id)"> Изменить</button>
+                        <button @click="$refs.mod.editBook(item.id)" v-if=" user.id == item.user_id"> Изменить</button>
                     </v-card>
                 </v-col>
             </v-row>
@@ -71,11 +71,10 @@ export default {
             page: 1,
             books: [],
             sections: [],
-            sectionId: null,
+            sectionId: 1,
             length: null,
-            user: {
-
-            }
+            uId: '',
+            user: {}
         }
     },
     methods: {
@@ -122,16 +121,22 @@ export default {
                 console.log(resp);
                 alert("Could not load books");
             });
-        var app = this;
         axios.post('/api/auth/me', )
             .then(function (resp) {
-
                 app.user = resp.data;
-                // console.log(app.book)
             })
             .catch(function (resp) {
                 console.log(resp);
-                // alert("Could not load sections");
+            });
+        axios.get('/api/v1/books/' + app.sectionId + '/' + app.page)
+            .then(function (resp) {
+                console.log(resp.data.lenth)
+                app.books = resp.data.books;
+                app.length = resp.data.lenth;
+            })
+            .catch(function (resp) {
+                console.log(resp);
+                alert("Could not load books");
             });
 
     },

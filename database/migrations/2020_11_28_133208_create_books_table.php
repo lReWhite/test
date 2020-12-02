@@ -21,7 +21,9 @@ class CreateBooksTable extends Migration
             $table->date('publishing');
             $table->string('description');
             $table->string('img_src');
-            $table->string('section_id')->nullable();;
+            $table->string('section_id')->nullable();
+            $table->string('user_id');
+            
         });
     }
 

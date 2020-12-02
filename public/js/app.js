@@ -2201,6 +2201,7 @@ __webpack_require__.r(__webpack_exports__);
       sections: [],
       errors: [],
       book: {
+        user_id: '',
         name: '',
         author: '',
         publishing: new Date().toISOString().substr(0, 10),
@@ -2262,12 +2263,19 @@ __webpack_require__.r(__webpack_exports__);
       }
     }
   },
-  watch: {
-    isAddBook: function isAddBook() {
-      var app = this;
-    }
-  },
+  watch: {},
   methods: {
+    addBook: function addBook(id) {
+      var app = this;
+      this.book.user_id = id;
+      this.isAddBook = true;
+      axios.get('/api/v1/section').then(function (resp) {
+        console.log('hi', resp);
+        app.sections = resp.data;
+      })["catch"](function (resp) {
+        console.log(resp); // alert("Could not load sections");
+      });
+    },
     saveEditSection: function saveEditSection() {
       var app = this;
       axios.post('/api/v1/sectionEdit', app.section).then(function (resp) {
@@ -2310,6 +2318,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     clearForm: function clearForm() {
       this.book.name = '', this.book.author = '', this.book.publishing = new Date().toISOString().substr(0, 10), this.book.description = '', this.book.image = '', this.book.section_id = '';
+      this.book.user_id = '';
     },
     clearFormSection: function clearFormSection() {
       this.section.name = '';
@@ -2394,6 +2403,7 @@ __webpack_require__.r(__webpack_exports__);
         formData.append('publishing', app.book.publishing);
         formData.append('description', app.book.description);
         formData.append('image', app.book.image);
+        formData.append('user_id', app.book.user_id);
         axios.post('/api/v1/books', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
@@ -2619,8 +2629,9 @@ __webpack_require__.r(__webpack_exports__);
       page: 1,
       books: [],
       sections: [],
-      sectionId: null,
+      sectionId: 1,
       length: null,
+      uId: '',
       user: {}
     };
   },
@@ -2660,11 +2671,18 @@ __webpack_require__.r(__webpack_exports__);
       console.log(resp);
       alert("Could not load books");
     });
-    var app = this;
     axios.post('/api/auth/me').then(function (resp) {
-      app.user = resp.data; // console.log(app.book)
+      app.user = resp.data;
     })["catch"](function (resp) {
-      console.log(resp); // alert("Could not load sections");
+      console.log(resp);
+    });
+    axios.get('/api/v1/books/' + app.sectionId + '/' + app.page).then(function (resp) {
+      console.log(resp.data.lenth);
+      app.books = resp.data.books;
+      app.length = resp.data.lenth;
+    })["catch"](function (resp) {
+      console.log(resp);
+      alert("Could not load books");
     });
   }
 });
@@ -23107,13 +23125,13 @@ var render = function() {
             { attrs: { cols: "7", md: "7" } },
             [
               _c("v-row", { staticClass: "button-wraper" }, [
-                _vm.user.role === "admin" || _vm.user.role === "admin"
+                _vm.user.role === "admin" || _vm.user.role === "user"
                   ? _c(
                       "button",
                       {
                         on: {
                           click: function($event) {
-                            _vm.$refs.mod.isAddBook = true
+                            return _vm.$refs.mod.addBook(_vm.user.id)
                           }
                         }
                       },
@@ -23199,17 +23217,19 @@ var render = function() {
                             [_vm._v(" Удалить")]
                           ),
                           _vm._v(" "),
-                          _c(
-                            "button",
-                            {
-                              on: {
-                                click: function($event) {
-                                  return _vm.$refs.mod.editBook(item.id)
-                                }
-                              }
-                            },
-                            [_vm._v(" Изменить")]
-                          )
+                          _vm.user.id == item.user_id
+                            ? _c(
+                                "button",
+                                {
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.$refs.mod.editBook(item.id)
+                                    }
+                                  }
+                                },
+                                [_vm._v(" Изменить")]
+                              )
+                            : _vm._e()
                         ],
                         1
                       )
