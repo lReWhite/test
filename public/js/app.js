@@ -2115,11 +2115,49 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      submitStatus: '',
       sections: [],
       errors: [],
       book: {
@@ -2158,6 +2196,29 @@ __webpack_require__.r(__webpack_exports__);
         minLength: Object(vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_1__["minLength"])(1),
         maxLength: Object(vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_1__["maxLength"])(500)
       }
+    },
+    book: {
+      name: {
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_1__["required"],
+        minLength: Object(vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_1__["minLength"])(1),
+        maxLength: Object(vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_1__["maxLength"])(150)
+      },
+      description: {
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_1__["required"],
+        minLength: Object(vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_1__["minLength"])(1),
+        maxLength: Object(vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_1__["maxLength"])(200)
+      },
+      author: {
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_1__["required"],
+        minLength: Object(vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_1__["minLength"])(1),
+        maxLength: Object(vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_1__["maxLength"])(100)
+      },
+      publishing: {
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_1__["required"]
+      },
+      section_id: {
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_1__["required"]
+      }
     }
   },
   watch: {
@@ -2173,20 +2234,20 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     isEding: function isEding() {
-      clearForm();
+      this.clearForm();
       this.isEditBook = false;
     },
     isAddBooking: function isAddBooking() {
-      clearForm();
+      this.clearForm();
       this.isAddBook = false;
     },
     isAddSectioning: function isAddSectioning() {
       this.isAddSection = false;
-      clearFormSection();
+      this.clearFormSection();
     },
     isBooking: function isBooking() {
       this.isBook = false;
-      clearForm();
+      this.clearForm();
     },
     clearForm: function clearForm() {
       this.book.name = '', this.book.author = '', this.book.publishing = new Date().toISOString().substr(0, 10), this.book.description = '', this.book.image = '', this.book.section_id = '';
@@ -2219,54 +2280,72 @@ __webpack_require__.r(__webpack_exports__);
       axios.get('/api/v1/section').then(function (resp) {
         app.sections = resp.data;
       })["catch"](function (resp) {
-        console.log(resp);
-        alert("Could not load sections");
+        console.log(resp); // alert("Could not load sections");
       });
     },
     saveEdit: function saveEdit() {
-      var app = this;
-      axios.post('/api/v1/bookEdit', app.book).then(function (resp) {
-        app.book = resp.data;
-        alert("Книга изменена");
-        app.isEditBook = false;
-        clearForm(); // console.log(app.book)
-      })["catch"](function (resp) {
-        console.log(resp);
-        alert("Could not load sections");
-      });
+      this.$v.$touch();
+
+      if (this.$v.book.$invalid) {
+        this.submitStatus = 'ERROR';
+      } else {
+        var app = this;
+        app.book.image = app.imageSrc;
+        axios.post('/api/v1/bookEdit', app.book).then(function (resp) {
+          app.book = resp.data;
+          alert("Книга изменена");
+          app.isEditBook = false;
+          clearForm(); // console.log(app.book)
+        })["catch"](function (resp) {
+          console.log(resp); // alert("Could not load sections");
+        });
+      }
     },
     saveFormSection: function saveFormSection() {
-      event.preventDefault();
-      var app = this;
-      var newSection = app.section;
-      axios.post('/api/v1/section', newSection).then(function (resp) {
-        app.isAddSection = false;
-        clearForm();
-      })["catch"](function (resp) {
-        console.log(resp); // alert("Could not create your company");
-      });
+      this.$v.$touch();
+
+      if (this.$v.section.$invalid) {
+        this.submitStatus = 'ERROR';
+      } else {
+        this.submitStatus = 'PENDING';
+        event.preventDefault();
+        var app = this;
+        var newSection = app.section;
+        axios.post('/api/v1/section', newSection).then(function (resp) {
+          app.isAddSection = false;
+          clearForm();
+        })["catch"](function (resp) {
+          console.log(resp); // alert("Could not create your company");
+        });
+      }
     },
     saveForm: function saveForm() {
-      event.preventDefault();
-      var app = this;
-      app.book.image = app.imageSrc;
-      var formData = new FormData();
-      formData.append('section_id', app.book.section_id);
-      formData.append('name', app.book.name);
-      formData.append('author', app.book.author);
-      formData.append('publishing', app.book.publishing);
-      formData.append('description', app.book.description);
-      formData.append('image', app.book.image);
-      axios.post('/api/v1/books', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }).then(function (resp) {
-        app.isAddBook = false;
-      })["catch"](function (resp) {
-        console.log(resp);
-        alert("Could not create your book");
-      });
+      this.$v.$touch();
+
+      if (this.$v.book.$invalid) {
+        this.submitStatus = 'ERROR';
+      } else {
+        event.preventDefault();
+        var app = this;
+        app.book.image = app.imageSrc;
+        var formData = new FormData();
+        formData.append('section_id', app.book.section_id);
+        formData.append('name', app.book.name);
+        formData.append('author', app.book.author);
+        formData.append('publishing', app.book.publishing);
+        formData.append('description', app.book.description);
+        formData.append('image', app.book.image);
+        axios.post('/api/v1/books', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then(function (resp) {
+          app.isAddBook = false;
+        })["catch"](function (resp) {
+          console.log(resp);
+          alert("Could not create your book");
+        });
+      }
     },
     isDelete: function isDelete(id) {
       this.isDelet = true;
@@ -21300,7 +21379,8 @@ var render = function() {
                                 _c("img", {
                                   staticStyle: { width: "250px" },
                                   attrs: {
-                                    src: "../storage/" + _vm.book.img_src
+                                    src: _vm.book.imageSrc || _vm.defaultSrc,
+                                    alt: ""
                                   }
                                 })
                               ]
@@ -21325,9 +21405,10 @@ var render = function() {
                                   directives: [
                                     {
                                       name: "model",
-                                      rawName: "v-model",
-                                      value: _vm.book.section_id,
-                                      expression: "book.section_id "
+                                      rawName: "v-model.trim",
+                                      value: _vm.$v.book.section_id.$model,
+                                      expression: "$v.book.section_id.$model ",
+                                      modifiers: { trim: true }
                                     }
                                   ],
                                   staticClass: "select-sect",
@@ -21345,8 +21426,8 @@ var render = function() {
                                           return val
                                         })
                                       _vm.$set(
-                                        _vm.book,
-                                        "section_id",
+                                        _vm.$v.book.section_id,
+                                        "$model",
                                         $event.target.multiple
                                           ? $$selectedVal
                                           : $$selectedVal[0]
@@ -21382,7 +21463,13 @@ var render = function() {
                                   })
                                 ],
                                 2
-                              )
+                              ),
+                              _vm._v(" "),
+                              !_vm.$v.book.section_id.required
+                                ? _c("div", { staticClass: "error" }, [
+                                    _vm._v("Обязательное поле.")
+                                  ])
+                                : _vm._e()
                             ])
                           ],
                           1
@@ -21394,24 +21481,92 @@ var render = function() {
                             _c("v-text-field", {
                               attrs: { label: "Название" },
                               model: {
-                                value: _vm.book.name,
+                                value: _vm.$v.book.name.$model,
                                 callback: function($$v) {
-                                  _vm.$set(_vm.book, "name", $$v)
+                                  _vm.$set(
+                                    _vm.$v.book.name,
+                                    "$model",
+                                    typeof $$v === "string" ? $$v.trim() : $$v
+                                  )
                                 },
-                                expression: "book.name"
+                                expression: "$v.book.name.$model"
                               }
                             }),
+                            _vm._v(" "),
+                            !_vm.$v.book.name.required
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v("Обязательное поле.")
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            !_vm.$v.book.name.minLength
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v(
+                                    "Минимум " +
+                                      _vm._s(
+                                        _vm.$v.book.name.$params.minLength.min
+                                      ) +
+                                      " символов."
+                                  )
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            !_vm.$v.book.name.maxLength
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v(
+                                    "Максимум " +
+                                      _vm._s(
+                                        _vm.$v.book.name.$params.maxLength.max
+                                      ) +
+                                      " символов."
+                                  )
+                                ])
+                              : _vm._e(),
                             _vm._v(" "),
                             _c("v-text-field", {
                               attrs: { label: "Автор" },
                               model: {
-                                value: _vm.book.author,
+                                value: _vm.$v.book.author.$model,
                                 callback: function($$v) {
-                                  _vm.$set(_vm.book, "author", $$v)
+                                  _vm.$set(
+                                    _vm.$v.book.author,
+                                    "$model",
+                                    typeof $$v === "string" ? $$v.trim() : $$v
+                                  )
                                 },
-                                expression: "book.author"
+                                expression: "$v.book.author.$model"
                               }
                             }),
+                            _vm._v(" "),
+                            !_vm.$v.book.author.required
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v("Обязательное поле.")
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            !_vm.$v.book.author.minLength
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v(
+                                    "Минимум " +
+                                      _vm._s(
+                                        _vm.$v.book.author.$params.minLength.min
+                                      ) +
+                                      " символов."
+                                  )
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            !_vm.$v.book.author.maxLength
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v(
+                                    "Максимум " +
+                                      _vm._s(
+                                        _vm.$v.book.author.$params.maxLength.max
+                                      ) +
+                                      " символов."
+                                  )
+                                ])
+                              : _vm._e(),
                             _vm._v(" "),
                             _c(
                               "v-menu",
@@ -21443,15 +21598,20 @@ var render = function() {
                                                   readonly: ""
                                                 },
                                                 model: {
-                                                  value: _vm.book.publishing,
+                                                  value:
+                                                    _vm.$v.book.publishing
+                                                      .$model,
                                                   callback: function($$v) {
                                                     _vm.$set(
-                                                      _vm.book,
-                                                      "publishing",
-                                                      $$v
+                                                      _vm.$v.book.publishing,
+                                                      "$model",
+                                                      typeof $$v === "string"
+                                                        ? $$v.trim()
+                                                        : $$v
                                                     )
                                                   },
-                                                  expression: "book.publishing"
+                                                  expression:
+                                                    "$v.book.publishing.$model"
                                                 }
                                               },
                                               "v-text-field",
@@ -21482,16 +21642,26 @@ var render = function() {
                                     }
                                   },
                                   model: {
-                                    value: _vm.book.publishing,
+                                    value: _vm.$v.book.publishing.$model,
                                     callback: function($$v) {
-                                      _vm.$set(_vm.book, "publishing", $$v)
+                                      _vm.$set(
+                                        _vm.$v.book.publishing,
+                                        "$model",
+                                        $$v
+                                      )
                                     },
-                                    expression: "book.publishing"
+                                    expression: "$v.book.publishing.$model"
                                   }
                                 })
                               ],
                               1
                             ),
+                            _vm._v(" "),
+                            !_vm.$v.book.publishing.required
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v("Обязательное поле.")
+                                ])
+                              : _vm._e(),
                             _vm._v(" "),
                             _c("v-textarea", {
                               attrs: { color: "teal" },
@@ -21502,9 +21672,8 @@ var render = function() {
                                     return [
                                       _c("div", [
                                         _vm._v(
-                                          "\r\n                                        Описание "
-                                        ),
-                                        _c("small", [_vm._v("(optional)")])
+                                          "\r\n                                        Описание\r\n                                    "
+                                        )
                                       ])
                                     ]
                                   },
@@ -21512,13 +21681,49 @@ var render = function() {
                                 }
                               ]),
                               model: {
-                                value: _vm.book.description,
+                                value: _vm.$v.book.description.$model,
                                 callback: function($$v) {
-                                  _vm.$set(_vm.book, "description", $$v)
+                                  _vm.$set(
+                                    _vm.$v.book.description,
+                                    "$model",
+                                    typeof $$v === "string" ? $$v.trim() : $$v
+                                  )
                                 },
-                                expression: "book.description"
+                                expression: "$v.book.description.$model"
                               }
-                            })
+                            }),
+                            _vm._v(" "),
+                            !_vm.$v.book.description.required
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v("Обязательное поле.")
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            !_vm.$v.book.description.minLength
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v(
+                                    "Минимум " +
+                                      _vm._s(
+                                        _vm.$v.book.description.$params
+                                          .minLength.min
+                                      ) +
+                                      " символов."
+                                  )
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            !_vm.$v.book.description.maxLength
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v(
+                                    "Максимум " +
+                                      _vm._s(
+                                        _vm.$v.book.description.$params
+                                          .maxLength.max
+                                      ) +
+                                      " символов."
+                                  )
+                                ])
+                              : _vm._e()
                           ],
                           1
                         )
@@ -21554,7 +21759,10 @@ var render = function() {
                     _c(
                       "v-btn",
                       {
-                        attrs: { color: "green darken-1" },
+                        attrs: {
+                          color: "green darken-1",
+                          disabled: _vm.submitStatus === "PENDING"
+                        },
                         on: {
                           click: function($event) {
                             return _vm.saveEdit()
@@ -21563,10 +21771,28 @@ var render = function() {
                       },
                       [
                         _vm._v(
-                          "\r\n                        Добавить\r\n                    "
+                          "\r\n                        Сохранить\r\n                    "
                         )
                       ]
-                    )
+                    ),
+                    _vm._v(" "),
+                    _vm.submitStatus === "OK"
+                      ? _c("p", { staticClass: "typo__p" }, [
+                          _vm._v("Thanks for your submission!")
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.submitStatus === "ERROR"
+                      ? _c("p", { staticClass: "typo__p" }, [
+                          _vm._v("Please fill the form correctly.")
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.submitStatus === "PENDING"
+                      ? _c("p", { staticClass: "typo__p" }, [
+                          _vm._v("Sending...")
+                        ])
+                      : _vm._e()
                   ],
                   1
                 )
@@ -21640,9 +21866,10 @@ var render = function() {
                                   directives: [
                                     {
                                       name: "model",
-                                      rawName: "v-model",
-                                      value: _vm.book.section_id,
-                                      expression: "book.section_id "
+                                      rawName: "v-model.trim",
+                                      value: _vm.$v.book.section_id.$model,
+                                      expression: "$v.book.section_id.$model ",
+                                      modifiers: { trim: true }
                                     }
                                   ],
                                   staticClass: "select-sect",
@@ -21660,8 +21887,8 @@ var render = function() {
                                           return val
                                         })
                                       _vm.$set(
-                                        _vm.book,
-                                        "section_id",
+                                        _vm.$v.book.section_id,
+                                        "$model",
                                         $event.target.multiple
                                           ? $$selectedVal
                                           : $$selectedVal[0]
@@ -21697,7 +21924,13 @@ var render = function() {
                                   })
                                 ],
                                 2
-                              )
+                              ),
+                              _vm._v(" "),
+                              !_vm.$v.book.section_id.required
+                                ? _c("div", { staticClass: "error" }, [
+                                    _vm._v("Обязательное поле.")
+                                  ])
+                                : _vm._e()
                             ])
                           ],
                           1
@@ -21709,24 +21942,92 @@ var render = function() {
                             _c("v-text-field", {
                               attrs: { label: "Название" },
                               model: {
-                                value: _vm.book.name,
+                                value: _vm.$v.book.name.$model,
                                 callback: function($$v) {
-                                  _vm.$set(_vm.book, "name", $$v)
+                                  _vm.$set(
+                                    _vm.$v.book.name,
+                                    "$model",
+                                    typeof $$v === "string" ? $$v.trim() : $$v
+                                  )
                                 },
-                                expression: "book.name"
+                                expression: "$v.book.name.$model"
                               }
                             }),
+                            _vm._v(" "),
+                            !_vm.$v.book.name.required
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v("Обязательное поле.")
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            !_vm.$v.book.name.minLength
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v(
+                                    "Минимум " +
+                                      _vm._s(
+                                        _vm.$v.book.name.$params.minLength.min
+                                      ) +
+                                      " символов."
+                                  )
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            !_vm.$v.book.name.maxLength
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v(
+                                    "Максимум " +
+                                      _vm._s(
+                                        _vm.$v.book.name.$params.maxLength.max
+                                      ) +
+                                      " символов."
+                                  )
+                                ])
+                              : _vm._e(),
                             _vm._v(" "),
                             _c("v-text-field", {
                               attrs: { label: "Автор" },
                               model: {
-                                value: _vm.book.author,
+                                value: _vm.$v.book.author.$model,
                                 callback: function($$v) {
-                                  _vm.$set(_vm.book, "author", $$v)
+                                  _vm.$set(
+                                    _vm.$v.book.author,
+                                    "$model",
+                                    typeof $$v === "string" ? $$v.trim() : $$v
+                                  )
                                 },
-                                expression: "book.author"
+                                expression: "$v.book.author.$model"
                               }
                             }),
+                            _vm._v(" "),
+                            !_vm.$v.book.author.required
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v("Обязательное поле.")
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            !_vm.$v.book.author.minLength
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v(
+                                    "Минимум " +
+                                      _vm._s(
+                                        _vm.$v.book.author.$params.minLength.min
+                                      ) +
+                                      " символов."
+                                  )
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            !_vm.$v.book.author.maxLength
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v(
+                                    "Максимум " +
+                                      _vm._s(
+                                        _vm.$v.book.author.$params.maxLength.max
+                                      ) +
+                                      " символов."
+                                  )
+                                ])
+                              : _vm._e(),
                             _vm._v(" "),
                             _c(
                               "v-menu",
@@ -21758,15 +22059,20 @@ var render = function() {
                                                   readonly: ""
                                                 },
                                                 model: {
-                                                  value: _vm.book.publishing,
+                                                  value:
+                                                    _vm.$v.book.publishing
+                                                      .$model,
                                                   callback: function($$v) {
                                                     _vm.$set(
-                                                      _vm.book,
-                                                      "publishing",
-                                                      $$v
+                                                      _vm.$v.book.publishing,
+                                                      "$model",
+                                                      typeof $$v === "string"
+                                                        ? $$v.trim()
+                                                        : $$v
                                                     )
                                                   },
-                                                  expression: "book.publishing"
+                                                  expression:
+                                                    "$v.book.publishing.$model"
                                                 }
                                               },
                                               "v-text-field",
@@ -21797,16 +22103,26 @@ var render = function() {
                                     }
                                   },
                                   model: {
-                                    value: _vm.book.publishing,
+                                    value: _vm.$v.book.publishing.$model,
                                     callback: function($$v) {
-                                      _vm.$set(_vm.book, "publishing", $$v)
+                                      _vm.$set(
+                                        _vm.$v.book.publishing,
+                                        "$model",
+                                        $$v
+                                      )
                                     },
-                                    expression: "book.publishing"
+                                    expression: "$v.book.publishing.$model"
                                   }
                                 })
                               ],
                               1
                             ),
+                            _vm._v(" "),
+                            !_vm.$v.book.publishing.required
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v("Обязательное поле.")
+                                ])
+                              : _vm._e(),
                             _vm._v(" "),
                             _c("v-textarea", {
                               attrs: { color: "teal" },
@@ -21817,9 +22133,8 @@ var render = function() {
                                     return [
                                       _c("div", [
                                         _vm._v(
-                                          "\r\n                                        Описание "
-                                        ),
-                                        _c("small", [_vm._v("(optional)")])
+                                          "\r\n                                        Описание\r\n                                    "
+                                        )
                                       ])
                                     ]
                                   },
@@ -21827,13 +22142,49 @@ var render = function() {
                                 }
                               ]),
                               model: {
-                                value: _vm.book.description,
+                                value: _vm.$v.book.description.$model,
                                 callback: function($$v) {
-                                  _vm.$set(_vm.book, "description", $$v)
+                                  _vm.$set(
+                                    _vm.$v.book.description,
+                                    "$model",
+                                    typeof $$v === "string" ? $$v.trim() : $$v
+                                  )
                                 },
-                                expression: "book.description"
+                                expression: "$v.book.description.$model"
                               }
-                            })
+                            }),
+                            _vm._v(" "),
+                            !_vm.$v.book.description.required
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v("Обязательное поле.")
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            !_vm.$v.book.description.minLength
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v(
+                                    "Минимум " +
+                                      _vm._s(
+                                        _vm.$v.book.description.$params
+                                          .minLength.min
+                                      ) +
+                                      " символов."
+                                  )
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            !_vm.$v.book.description.maxLength
+                              ? _c("div", { staticClass: "error" }, [
+                                  _vm._v(
+                                    "Максимум " +
+                                      _vm._s(
+                                        _vm.$v.book.description.$params
+                                          .maxLength.max
+                                      ) +
+                                      " символов."
+                                  )
+                                ])
+                              : _vm._e()
                           ],
                           1
                         )
@@ -21869,7 +22220,10 @@ var render = function() {
                     _c(
                       "v-btn",
                       {
-                        attrs: { color: "green darken-1" },
+                        attrs: {
+                          color: "green darken-1",
+                          disabled: _vm.submitStatus === "PENDING"
+                        },
                         on: {
                           click: function($event) {
                             return _vm.saveForm()
@@ -21881,7 +22235,25 @@ var render = function() {
                           "\r\n                        Добавить\r\n                    "
                         )
                       ]
-                    )
+                    ),
+                    _vm._v(" "),
+                    _vm.submitStatus === "OK"
+                      ? _c("p", { staticClass: "typo__p" }, [
+                          _vm._v("Thanks for your submission!")
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.submitStatus === "ERROR"
+                      ? _c("p", { staticClass: "typo__p" }, [
+                          _vm._v("Please fill the form correctly.")
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.submitStatus === "PENDING"
+                      ? _c("p", { staticClass: "typo__p" }, [
+                          _vm._v("Sending...")
+                        ])
+                      : _vm._e()
                   ],
                   1
                 )
@@ -21983,7 +22355,7 @@ var render = function() {
                                     return [
                                       _c("div", [
                                         _vm._v(
-                                          "\r\n                                        Описание \r\n                                    "
+                                          "\r\n                                        Описание\r\n                                    "
                                         )
                                       ])
                                     ]
@@ -22070,7 +22442,10 @@ var render = function() {
                     _c(
                       "v-btn",
                       {
-                        attrs: { color: "green darken-1" },
+                        attrs: {
+                          color: "green darken-1",
+                          disabled: _vm.submitStatus === "PENDING"
+                        },
                         on: {
                           click: function($event) {
                             return _vm.saveFormSection()
@@ -22082,7 +22457,25 @@ var render = function() {
                           "\r\n                        Добавить\r\n                    "
                         )
                       ]
-                    )
+                    ),
+                    _vm._v(" "),
+                    _vm.submitStatus === "OK"
+                      ? _c("p", { staticClass: "typo__p" }, [
+                          _vm._v("Thanks for your submission!")
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.submitStatus === "ERROR"
+                      ? _c("p", { staticClass: "typo__p" }, [
+                          _vm._v("Please fill the form correctly.")
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.submitStatus === "PENDING"
+                      ? _c("p", { staticClass: "typo__p" }, [
+                          _vm._v("Sending...")
+                        ])
+                      : _vm._e()
                   ],
                   1
                 )
