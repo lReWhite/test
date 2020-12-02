@@ -236,6 +236,46 @@
             </form>
         </v-card>
     </v-dialog>
+
+    <v-dialog v-model="isEditSection">
+        <v-card>
+            <form>
+                <v-card-title class="headline">Редактировать раздел</v-card-title>
+                <v-card-text>
+                    <v-row>
+                        <v-col :class="{ 'form-group--error': $v.section.name.$error }">
+                            <v-text-field label="Название" v-model.trim="$v.section.name.$model"></v-text-field>
+                            <div class="error" v-if="!$v.section.name.required">Обязательное поле.</div>
+                            <div class="error" v-if="!$v.section.name.minLength">Минимум {{ $v.section.name.$params.minLength.min }} символов.</div>
+                            <div class="error" v-if="!$v.section.name.maxLength">Максимум {{ $v.section.name.$params.maxLength.max }} символов.</div>
+                            <v-textarea color="teal" v-model.trim="$v.section.description.$model">
+                                <template v-slot:label>
+                                    <div>
+                                        Описание
+                                    </div>
+                                </template>
+                            </v-textarea>
+                            <div class="error" v-if="!$v.section.description.required">Обязательное поле.</div>
+                            <div class="error" v-if="!$v.section.description.minLength">Минимум {{ $v.section.description.$params.minLength.min }} символов.</div>
+                            <div class="error" v-if="!$v.section.description.maxLength">Максимум {{ $v.section.description.$params.maxLength.max }} символов.</div>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="green darken-1" @click="isEditSectioning()">
+                        Отмена
+                    </v-btn>
+                    <v-btn color="green darken-1" @click="saveEditSection()" :disabled="submitStatus === 'PENDING'">
+                        Добавить
+                    </v-btn>
+                    <p class="typo__p" v-if="submitStatus === 'OK'">Thanks for your submission!</p>
+                    <p class="typo__p" v-if="submitStatus === 'ERROR'">Please fill the form correctly.</p>
+                    <p class="typo__p" v-if="submitStatus === 'PENDING'">Sending...</p>
+                </v-card-actions>
+            </form>
+        </v-card>
+    </v-dialog>
 </v-row>
 </template>
 
@@ -274,6 +314,7 @@ export default {
         menu2: false,
         isBook: false,
         isEditBook: false,
+        isEditSection: false,
         defaultSrc: 'https://png.pngtree.com/png-clipart/20190118/ourlarge/pngtree-book-hand-drawn-book-five-books-open-png-image_447137.jpg',
     }),
     validations: {
@@ -318,18 +359,40 @@ export default {
     watch: {
         isAddBook: function () {
             var app = this;
-            axios.get('/api/v1/section')
+
+        },
+    },
+    methods: {
+        saveEditSection() {
+            var app = this;
+            axios.post('/api/v1/sectionEdit', app.section)
                 .then(function (resp) {
                     app.sections = resp.data;
+                    app.isEditSectioning()
                 })
                 .catch(function (resp) {
                     console.log(resp);
                     alert("Could not load sections");
                 });
         },
-    },
-    methods: {
 
+        isEditSectioning() {
+            this.clearFormSection();
+            this.isEditSection = false;
+        },
+
+        EditSection(id) {
+            this.isEditSection = true
+            var app = this;
+            axios.get('/api/v1/section/'+id)
+                .then(function (resp) {
+                    app.section = resp.data;
+                })
+                .catch(function (resp) {
+                    console.log(resp);
+                    alert("Could not load sections");
+                });
+        },
         isEding() {
             this.clearForm();
             this.isEditBook = false;
@@ -403,7 +466,7 @@ export default {
                 this.submitStatus = 'ERROR'
             } else {
                 var app = this;
-                 app.book.image = app.imageSrc;
+                app.book.image = app.imageSrc;
                 axios.post('/api/v1/bookEdit', app.book)
                     .then(function (resp) {
                         app.book = resp.data;

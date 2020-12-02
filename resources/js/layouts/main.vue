@@ -16,8 +16,17 @@ export default {
     components: {
         Header,
         Footer,
-    }
+    },
+    data: () => ({
+        user: ''
+    }),
+    mounted() {
+       
+    },
+
 }
+
+// 
 </script>
 
 <style>
@@ -37,7 +46,8 @@ export default {
     padding: 5%;
     margin-bottom: 2%;
 }
-.v-pagination__item:focus{
+
+.v-pagination__item:focus {
     border: none;
     outline: none;
 }

@@ -18,11 +18,11 @@ class sectionController extends Controller
         return Section::findOrFail($id);
     }
  
-    public function update(Request $request, $id)
-    {
-        $section = Section::findOrFail($id);
+    public function update(Request $request)
+    {   
+        // dd($request);
+        $section = Section::findOrFail($request->id);
         $section->update($request->all());
- 
         return $section;
     }
  

@@ -6,7 +6,7 @@
             Авторизация
         </div>
         <div class="iput-wraper">
-            <v-text-field label="логин" v-model="user.name"></v-text-field>
+            <v-text-field label="логин" v-model="user.email"></v-text-field>
             <v-text-field label="пароль" v-model="user.password"></v-text-field>
             <v-row style="justify-content: space-between;">
                 <v-btn color="info" @click="login()">Логин</v-btn>
@@ -20,9 +20,9 @@
             Регистрация
         </div>
         <div class="iput-wraper">
-            <v-text-field label="логин" v-model="userReg.name"></v-text-field>
-            <v-text-field label="пароль" v-model="userReg.email"></v-text-field>
-              <v-text-field label="Имя" v-model="userReg.password"></v-text-field>
+            <v-text-field label="логин" v-model="userReg.email"></v-text-field>
+            <v-text-field label="пароль" v-model="userReg.password"></v-text-field>
+            <v-text-field label="Имя" v-model="userReg.name"></v-text-field>
             <v-row style="justify-content: space-between;">
                 <v-btn color="info" @click="isLogin = true">Логин</v-btn>
                 <v-btn color="info" @click="reg">Регистрация</v-btn>
@@ -36,54 +36,33 @@
 export default {
     data: () => ({
         isLogin: true,
-        user:{
-            email:'',
-            password:'',
+        user: {
+            email: '',
+            password: '',
         },
         userReg: {
-            email:'',
-            password:'',
-            name:'',
-            role:'',
+            email: '',
+            password: '',
+            name: '',
+            role: '',
         }
     }),
     methods: {
-        
-        login() {
-            // this.$v.$touch()
-            // if (this.$v.book.$invalid) {
-            //     this.submitStatus = 'ERROR'
-            // } else {
-                var app = this;
-                axios.post('api/auth/login', app.user)
-                    .then(function (resp) {
-                        clearForm();
-                        // console.log(app.book)
-                    })
-                    .catch(function (resp) {
-                        console.log(resp);
-                        // alert("Could not load sections");
-                    });
-            // }
 
+        login() {
+            this.$store.dispatch('login',  this.user )
+                .then(() => this.$router.push('/'))
+                .catch(err => console.log(err))
         },
 
         reg() {
-            // this.$v.$touch()
-            // if (this.$v.book.$invalid) {
-            //     this.submitStatus = 'ERROR'
-            // } else {
-                var app = this;
-                axios.post('api/auth/reg', app.userReg)
-                    .then(function (resp) {
-                        clearForm();
-                        // console.log(app.book)
-                    })
-                    .catch(function (resp) {
-                        console.log(resp);
-                        // alert("Could not load sections");
-                    });
-            // }
+            this.$store.dispatch('register', this.userReg)
+                .then(function (resp) {
+                    clearForm();
+                })
+                .catch(function (resp) {
+                    console.log(resp);
+                });
 
         },
     }
