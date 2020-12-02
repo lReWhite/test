@@ -2483,16 +2483,28 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//  import store from "../store";
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
+  components: {},
   data: function data() {
     return {
-      isSearch: false
+      isSearch: false,
+      keywords: '',
+      res: []
     };
   },
   computed: {
     isLoggedIn: function isLoggedIn() {
       return this.$store.getters.isLoggedIn;
+    }
+  },
+  watch: {
+    keywords: function keywords(after, before) {
+      this.fetch();
     }
   },
   methods: {
@@ -2502,6 +2514,19 @@ __webpack_require__.r(__webpack_exports__);
       this.$store.dispatch('logout').then(function () {
         _this.$router.push('/login');
       });
+    },
+    fetch: function fetch() {
+      var app = this;
+      axios.get('/api/v1/search', {
+        params: {
+          keywords: this.keywords
+        }
+      }).then(function (resp) {
+        app.res = resp.data; // app.isEditSectioning()
+      }) // (response =>
+      //  app.res = reponse.data
+      //  )
+      ["catch"](function (error) {});
     }
   }
 });
@@ -23015,7 +23040,38 @@ var render = function() {
           ),
           _vm._v(" "),
           _vm.isSearch
-            ? _c("v-autocomplete", { attrs: { clearable: "" } })
+            ? _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.keywords,
+                    expression: "keywords"
+                  }
+                ],
+                attrs: { type: "text" },
+                domProps: { value: _vm.keywords },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.keywords = $event.target.value
+                  }
+                }
+              })
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.res
+            ? _c(
+                "ul",
+                _vm._l(_vm.res, function(result) {
+                  return _c("li", { key: result.id }, [
+                    _vm._v(_vm._s(result.name))
+                  ])
+                }),
+                0
+              )
             : _vm._e()
         ],
         1

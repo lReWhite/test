@@ -97,4 +97,11 @@ class booksController extends Controller
         return 'Книга удалена';
     }
 
+    public function search(Request $request)
+    {      
+    // dd($request);
+    $posts = Books::where('name', $request->keywords)->get();
+    return response()->json($posts);
+    }
+
 }

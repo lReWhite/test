@@ -24,6 +24,7 @@ Route::group(['prefix' => '/v1', 'namespace' => 'Api\V1', 'as' => 'api.'], funct
     Route::get('book/{id}/', 'booksController@byId');
     Route::get('books/{id}/{page}', 'booksController@show');
     Route::post('bookEdit', 'booksController@update');
+    Route::get('search', 'booksController@search');
 });
 
 Route::group(['prefix' => '/v1', 'namespace' => 'Api\V1', 'as' => 'api.'], function () {
