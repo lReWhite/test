@@ -10,6 +10,7 @@
     "watch-poll": "npm run watch -- --watch-poll"
   },
   "dependencies": {
+    "@websanova/vue-auth": "^4.0.3",
     "vue": "^2.6.12",
     "vue-router": "^3.4.9",
     "vuelidate": "^0.7.6",

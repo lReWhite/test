@@ -2620,11 +2620,48 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      isLogin: true
+      isLogin: true,
+      user: {
+        email: '',
+        password: ''
+      },
+      userReg: {
+        email: '',
+        password: '',
+        name: '',
+        role: ''
+      }
     };
+  },
+  methods: {
+    login: function login() {
+      // this.$v.$touch()
+      // if (this.$v.book.$invalid) {
+      //     this.submitStatus = 'ERROR'
+      // } else {
+      var app = this;
+      axios.post('api/auth/login', app.user).then(function (resp) {
+        clearForm(); // console.log(app.book)
+      })["catch"](function (resp) {
+        console.log(resp); // alert("Could not load sections");
+      }); // }
+    },
+    reg: function reg() {
+      // this.$v.$touch()
+      // if (this.$v.book.$invalid) {
+      //     this.submitStatus = 'ERROR'
+      // } else {
+      var app = this;
+      axios.post('api/auth/reg', app.userReg).then(function (resp) {
+        clearForm(); // console.log(app.book)
+      })["catch"](function (resp) {
+        console.log(resp); // alert("Could not load sections");
+      }); // }
+    }
   }
 });
 
@@ -22904,17 +22941,44 @@ var render = function() {
               "div",
               { staticClass: "iput-wraper" },
               [
-                _c("v-text-field", { attrs: { label: "логин" } }),
+                _c("v-text-field", {
+                  attrs: { label: "логин" },
+                  model: {
+                    value: _vm.user.name,
+                    callback: function($$v) {
+                      _vm.$set(_vm.user, "name", $$v)
+                    },
+                    expression: "user.name"
+                  }
+                }),
                 _vm._v(" "),
-                _c("v-text-field", { attrs: { label: "пароль" } }),
+                _c("v-text-field", {
+                  attrs: { label: "пароль" },
+                  model: {
+                    value: _vm.user.password,
+                    callback: function($$v) {
+                      _vm.$set(_vm.user, "password", $$v)
+                    },
+                    expression: "user.password"
+                  }
+                }),
                 _vm._v(" "),
                 _c(
                   "v-row",
                   { staticStyle: { "justify-content": "space-between" } },
                   [
-                    _c("v-btn", { attrs: { color: "info" } }, [
-                      _vm._v("Логин")
-                    ]),
+                    _c(
+                      "v-btn",
+                      {
+                        attrs: { color: "info" },
+                        on: {
+                          click: function($event) {
+                            return _vm.login()
+                          }
+                        }
+                      },
+                      [_vm._v("Логин")]
+                    ),
                     _vm._v(" "),
                     _c(
                       "v-btn",
@@ -22947,9 +23011,38 @@ var render = function() {
               "div",
               { staticClass: "iput-wraper" },
               [
-                _c("v-text-field", { attrs: { label: "логин" } }),
+                _c("v-text-field", {
+                  attrs: { label: "логин" },
+                  model: {
+                    value: _vm.userReg.name,
+                    callback: function($$v) {
+                      _vm.$set(_vm.userReg, "name", $$v)
+                    },
+                    expression: "userReg.name"
+                  }
+                }),
                 _vm._v(" "),
-                _c("v-text-field", { attrs: { label: "пароль" } }),
+                _c("v-text-field", {
+                  attrs: { label: "пароль" },
+                  model: {
+                    value: _vm.userReg.email,
+                    callback: function($$v) {
+                      _vm.$set(_vm.userReg, "email", $$v)
+                    },
+                    expression: "userReg.email"
+                  }
+                }),
+                _vm._v(" "),
+                _c("v-text-field", {
+                  attrs: { label: "Имя" },
+                  model: {
+                    value: _vm.userReg.password,
+                    callback: function($$v) {
+                      _vm.$set(_vm.userReg, "password", $$v)
+                    },
+                    expression: "userReg.password"
+                  }
+                }),
                 _vm._v(" "),
                 _c(
                   "v-row",
@@ -22968,9 +23061,11 @@ var render = function() {
                       [_vm._v("Логин")]
                     ),
                     _vm._v(" "),
-                    _c("v-btn", { attrs: { color: "info" } }, [
-                      _vm._v("Регистрация")
-                    ])
+                    _c(
+                      "v-btn",
+                      { attrs: { color: "info" }, on: { click: _vm.reg } },
+                      [_vm._v("Регистрация")]
+                    )
                   ],
                   1
                 )
