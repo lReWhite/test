@@ -2698,6 +2698,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuelidate/lib/validators */ "./node_modules/vuelidate/lib/validators/index.js");
+/* harmony import */ var vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0__);
 //
 //
 //
@@ -2732,9 +2734,26 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+// <div v-if="!$v.user.email.email">Обязательнео поле</div>
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      submitStatus: '',
       isLogin: true,
       user: {
         email: '',
@@ -2748,22 +2767,67 @@ __webpack_require__.r(__webpack_exports__);
       }
     };
   },
+  validations: {
+    user: {
+      email: {
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0__["required"],
+        email: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0__["email"]
+      },
+      password: {
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0__["required"],
+        minLength: Object(vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0__["minLength"])(6)
+      }
+    },
+    userReg: {
+      email: {
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0__["required"],
+        email: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0__["email"]
+      },
+      password: {
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0__["required"],
+        minLength: Object(vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0__["minLength"])(6)
+      },
+      name: {
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_0__["required"]
+      }
+    }
+  },
   methods: {
+    clearForm: function clearForm() {
+      this.user.email = '';
+      this.user.password = '';
+      this.userReg.email = '', this.userReg.password = '', this.userReg.name = '';
+    },
     login: function login() {
       var _this = this;
 
-      this.$store.dispatch('login', this.user).then(function () {
-        return _this.$router.push('/');
-      })["catch"](function (err) {
-        return console.log(err);
-      });
+      if (this.$v.user.$invalid) {
+        this.submitStatus = 'ERROR';
+      } else {
+        this.$store.dispatch('login', this.user).then(function () {
+          return _this.$router.push('/');
+        })["catch"](function (err) {
+          return console.log(err);
+        });
+      }
     },
     reg: function reg() {
-      this.$store.dispatch('register', this.userReg).then(function (resp) {
-        clearForm();
-      })["catch"](function (resp) {
-        console.log(resp);
-      });
+      var app = this;
+
+      if (this.$v.userReg.$invalid) {
+        this.submitStatus = 'ERROR';
+      } else {
+        this.$store.dispatch('register', this.userReg).then(function (resp) {
+          console.log(resp);
+
+          if (resp.data.message == "Successfully registration!") {
+            app.isLogin = !app.isLogin;
+            app.clearForm();
+          }
+        })["catch"](function (resp) {
+          console.log(resp);
+        });
+      }
     }
   }
 });
@@ -23308,24 +23372,46 @@ var render = function() {
                 _c("v-text-field", {
                   attrs: { label: "логин" },
                   model: {
-                    value: _vm.user.email,
+                    value: _vm.$v.user.email.$model,
                     callback: function($$v) {
-                      _vm.$set(_vm.user, "email", $$v)
+                      _vm.$set(
+                        _vm.$v.user.email,
+                        "$model",
+                        typeof $$v === "string" ? $$v.trim() : $$v
+                      )
                     },
-                    expression: "user.email"
+                    expression: "$v.user.email.$model"
                   }
                 }),
+                _vm._v(" "),
+                !_vm.$v.user.email.email
+                  ? _c("div", [_vm._v("Введите Email")])
+                  : _vm._e(),
                 _vm._v(" "),
                 _c("v-text-field", {
                   attrs: { label: "пароль" },
                   model: {
-                    value: _vm.user.password,
+                    value: _vm.$v.user.password.$model,
                     callback: function($$v) {
-                      _vm.$set(_vm.user, "password", $$v)
+                      _vm.$set(
+                        _vm.$v.user.password,
+                        "$model",
+                        typeof $$v === "string" ? $$v.trim() : $$v
+                      )
                     },
-                    expression: "user.password"
+                    expression: "$v.user.password.$model"
                   }
                 }),
+                _vm._v(" "),
+                !_vm.$v.user.password.minLength
+                  ? _c("div", { staticClass: "error" }, [
+                      _vm._v(
+                        "Минимум " +
+                          _vm._s(_vm.$v.user.password.$params.minLength.min) +
+                          " символов."
+                      )
+                    ])
+                  : _vm._e(),
                 _vm._v(" "),
                 _c(
                   "v-row",
@@ -23334,7 +23420,10 @@ var render = function() {
                     _c(
                       "v-btn",
                       {
-                        attrs: { color: "info" },
+                        attrs: {
+                          color: "info",
+                          disabled: _vm.submitStatus === "PENDING"
+                        },
                         on: {
                           click: function($event) {
                             return _vm.login()
@@ -23355,7 +23444,25 @@ var render = function() {
                         }
                       },
                       [_vm._v("Регистрация")]
-                    )
+                    ),
+                    _vm._v(" "),
+                    _vm.submitStatus === "OK"
+                      ? _c("p", { staticClass: "typo__p" }, [
+                          _vm._v("Thanks for your submission!")
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.submitStatus === "ERROR"
+                      ? _c("p", { staticClass: "typo__p" }, [
+                          _vm._v("Please fill the form correctly.")
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.submitStatus === "PENDING"
+                      ? _c("p", { staticClass: "typo__p" }, [
+                          _vm._v("Sending...")
+                        ])
+                      : _vm._e()
                   ],
                   1
                 )
@@ -23386,6 +23493,14 @@ var render = function() {
                   }
                 }),
                 _vm._v(" "),
+                !_vm.$v.userReg.email.required
+                  ? _c("div", [_vm._v("Обязательнео поле")])
+                  : _vm._e(),
+                _vm._v(" "),
+                !_vm.$v.userReg.email.email
+                  ? _c("div", [_vm._v("Введите Email")])
+                  : _vm._e(),
+                _vm._v(" "),
                 _c("v-text-field", {
                   attrs: { label: "пароль" },
                   model: {
@@ -23397,6 +23512,20 @@ var render = function() {
                   }
                 }),
                 _vm._v(" "),
+                !_vm.$v.userReg.password.required
+                  ? _c("div", [_vm._v("Обязательнео поле")])
+                  : _vm._e(),
+                _vm._v(" "),
+                !_vm.$v.userReg.password.minLength
+                  ? _c("div", { staticClass: "error" }, [
+                      _vm._v(
+                        "Минимум " +
+                          _vm._s(_vm.$v.user.password.$params.minLength.min) +
+                          " символов."
+                      )
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
                 _c("v-text-field", {
                   attrs: { label: "Имя" },
                   model: {
@@ -23407,6 +23536,10 @@ var render = function() {
                     expression: "userReg.name"
                   }
                 }),
+                _vm._v(" "),
+                !_vm.$v.userReg.name.required
+                  ? _c("div", [_vm._v("Обязательнео поле")])
+                  : _vm._e(),
                 _vm._v(" "),
                 _c(
                   "v-row",
@@ -23427,9 +23560,37 @@ var render = function() {
                     _vm._v(" "),
                     _c(
                       "v-btn",
-                      { attrs: { color: "info" }, on: { click: _vm.reg } },
+                      {
+                        attrs: {
+                          color: "info",
+                          disabled: _vm.submitStatus === "PENDING"
+                        },
+                        on: {
+                          click: function($event) {
+                            return _vm.reg()
+                          }
+                        }
+                      },
                       [_vm._v("Регистрация")]
-                    )
+                    ),
+                    _vm._v(" "),
+                    _vm.submitStatus === "OK"
+                      ? _c("p", { staticClass: "typo__p" }, [
+                          _vm._v("Thanks for your submission!")
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.submitStatus === "ERROR"
+                      ? _c("p", { staticClass: "typo__p" }, [
+                          _vm._v("Please fill the form correctly.")
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.submitStatus === "PENDING"
+                      ? _c("p", { staticClass: "typo__p" }, [
+                          _vm._v("Sending...")
+                        ])
+                      : _vm._e()
                   ],
                   1
                 )
