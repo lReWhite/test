@@ -169,15 +169,21 @@
                 <v-card-title class="headline">Добавить новый раздел</v-card-title>
                 <v-card-text>
                     <v-row>
-                        <v-col>
-                            <v-text-field label="Название" v-model="section.name"></v-text-field>
-                            <v-textarea color="teal" v-model="section.description">
+                        <v-col :class="{ 'form-group--error': $v.section.name.$error }">
+                            <v-text-field label="Название" v-model.trim="$v.section.name.$model" ></v-text-field>
+                            <div class="error" v-if="!$v.section.name.required">Обязательное поле.</div>
+                            <div class="error" v-if="!$v.section.name.minLength">Минимум {{ $v.section.name.$params.minLength.min }} символов.</div>
+                            <div class="error" v-if="!$v.section.name.maxLength">Максимум {{ $v.section.name.$params.maxLength.max }} символов.</div>
+                            <v-textarea color="teal"  v-model.trim="$v.section.description.$model" >
                                 <template v-slot:label>
                                     <div>
-                                        Описание <small>(optional)</small>
+                                        Описание 
                                     </div>
                                 </template>
                             </v-textarea>
+                             <div class="error" v-if="!$v.section.description.required">Обязательное поле.</div>
+                            <div class="error" v-if="!$v.section.description.minLength">Минимум {{ $v.section.description.$params.minLength.min }} символов.</div>
+                            <div class="error" v-if="!$v.section.description.maxLength">Максимум {{ $v.section.description.$params.maxLength.max }} символов.</div>
                         </v-col>
                     </v-row>
                 </v-card-text>
@@ -198,11 +204,17 @@
 
 <script>
 import Content from '../pages/content';
+import {
+    required,
+    minLength,
+    maxLength
+} from 'vuelidate/lib/validators'
+
 export default {
 
     data: () => ({
         sections: [],
-        errors:[],
+        errors: [],
         book: {
             name: '',
             author: '',
@@ -226,6 +238,21 @@ export default {
         isEditBook: false,
         defaultSrc: 'https://png.pngtree.com/png-clipart/20190118/ourlarge/pngtree-book-hand-drawn-book-five-books-open-png-image_447137.jpg',
     }),
+    validations: {
+        section: {
+            name: {
+                required,
+                minLength: minLength(1),
+                maxLength: maxLength(150)
+            },
+            description: {
+                required,
+                minLength: minLength(1),
+                maxLength: maxLength(500)
+            }
+        }
+
+    },
 
     watch: {
         isAddBook: function () {
@@ -241,9 +268,6 @@ export default {
         },
     },
     methods: {
-        checkSection: function (e) {
-            return true;
-        },
 
         isEding() {
             clearForm();
@@ -254,8 +278,8 @@ export default {
             this.isAddBook = false;
         },
         isAddSectioning() {
-            clearForm();
             this.isAddSection = false;
+            clearFormSection();
         },
         isBooking() {
             this.isBook = false;
@@ -339,7 +363,7 @@ export default {
                 })
                 .catch(function (resp) {
                     console.log(resp);
-                    alert("Could not create your company");
+                    // alert("Could not create your company");
                 });
         },
 
