@@ -41,7 +41,6 @@
                                 </v-card-title>
                             </v-flex>
                             <v-flex xs5>
-                                <!-- <v-img :src="'../storage/uploads/4wyUCVMSBQ9QeHCiTvyfQq6J39G1KqzDNbKdLSNE.jpeg'" height="125px" contain></v-img> -->
                                 <v-img :src="'../storage/'+ item.img_src"></v-img>
                             </v-flex>
                         </v-layout>

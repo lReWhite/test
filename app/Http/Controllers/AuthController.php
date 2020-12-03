@@ -43,7 +43,6 @@ class AuthController extends Controller
      */
     public function registration()
     {
-        // dd(request());
         $name = request('name');
         $email = request('email');
         $password = request('password');
@@ -64,7 +63,6 @@ class AuthController extends Controller
      */
     public function me()
     {
-        // dd(request());
         return response()->json(auth()->user());
     }
 
@@ -98,13 +96,7 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     protected function respondWithToken($token)
-    {
-        // return response()->json([
-        //     'access_token' => $token,
-        //     'token_type' => 'bearer',
-        //     'expires_in' => auth()->factory()->getTTL() * 60
-        // ]);
-        
+    {       
         return response()->json([
             'status' => 'success',
         ])->header('Authorization', $token);

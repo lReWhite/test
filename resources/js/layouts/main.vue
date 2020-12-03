@@ -32,7 +32,6 @@ export default {
 <style>
 .content {
     overflow-x: hidden;
-    /* max-height: calc(100% - 110px); */
     height: calc(100vh - 120px);
     overflow-y: auto;
     margin-top: 1%;

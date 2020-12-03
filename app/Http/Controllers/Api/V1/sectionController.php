@@ -20,7 +20,6 @@ class sectionController extends Controller
  
     public function update(Request $request)
     {   
-        // dd($request);
         $section = Section::findOrFail($request->id);
         $section->update($request->all());
         return $section;

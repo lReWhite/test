@@ -47,7 +47,6 @@
 </template>
 
 <script>
-// <div v-if="!$v.user.email.email">Обязательнео поле</div>
 
 import {
     required,

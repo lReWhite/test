@@ -102,12 +102,7 @@ export default {
                 })
                 .then(function (resp) {
                     app.res = resp.data
-                    // app.isEditSectioning()
                 })
-                // (response =>
-                //  app.res = reponse.data
-
-                //  )
                 .catch(error => {});
         }
     },
