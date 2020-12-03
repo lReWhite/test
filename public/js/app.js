@@ -2488,13 +2488,43 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {},
   data: function data() {
     return {
       isSearch: false,
+      isShowBook: false,
       keywords: '',
-      res: []
+      res: [],
+      book: ''
     };
   },
   computed: {
@@ -2508,6 +2538,17 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    isShow: function isShow(id) {
+      this.isShowBook = true;
+      var app = this;
+      axios.get('/api/v1/book/' + id).then(function (resp) {
+        app.book = resp.data;
+        console.log(app.book);
+      })["catch"](function (resp) {
+        console.log(resp);
+        alert("Could not load sections");
+      });
+    },
     logout: function logout() {
       var _this = this;
 
@@ -23066,13 +23107,117 @@ var render = function() {
             ? _c(
                 "ul",
                 _vm._l(_vm.res, function(result) {
-                  return _c("li", { key: result.id }, [
-                    _vm._v(_vm._s(result.name))
-                  ])
+                  return _c(
+                    "li",
+                    {
+                      key: result.id,
+                      on: {
+                        click: function($event) {
+                          return _vm.isShow(result.id)
+                        }
+                      }
+                    },
+                    [_vm._v(_vm._s(result.name))]
+                  )
                 }),
                 0
               )
             : _vm._e()
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-dialog",
+        {
+          attrs: { "max-width": "290" },
+          model: {
+            value: _vm.isShowBook,
+            callback: function($$v) {
+              _vm.isShowBook = $$v
+            },
+            expression: "isShowBook"
+          }
+        },
+        [
+          _c("v-card", [
+            _c(
+              "form",
+              [
+                _c("v-card-title", { staticClass: "headline" }),
+                _vm._v(" "),
+                _c(
+                  "v-card-text",
+                  [
+                    _c(
+                      "v-row",
+                      [
+                        _c(
+                          "v-col",
+                          [
+                            _c("v-img", {
+                              attrs: { src: "../storage/" + _vm.book.img_src }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-col",
+                          [
+                            _c("v-row", [
+                              _vm._v(
+                                "\r\n                                Назвине книги " +
+                                  _vm._s(_vm.book.name) +
+                                  "\r\n                            "
+                              )
+                            ]),
+                            _vm._v(" "),
+                            _c("v-row", [
+                              _vm._v(
+                                "\r\n                                Ее автор " +
+                                  _vm._s(_vm.book.author) +
+                                  "\r\n                            "
+                              )
+                            ])
+                          ],
+                          1
+                        )
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "v-card-actions",
+                  [
+                    _c("v-spacer"),
+                    _vm._v(" "),
+                    _c(
+                      "v-btn",
+                      {
+                        attrs: { color: "green darken-1" },
+                        on: {
+                          click: function($event) {
+                            _vm.isShowBook = false
+                          }
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\r\n                        Отмена\r\n                    "
+                        )
+                      ]
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            )
+          ])
         ],
         1
       )

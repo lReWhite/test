@@ -14,11 +14,39 @@
         </v-btn>
         <input type="text" v-model="keywords" v-if="isSearch">
         <ul v-if="res">
-            <li v-for="result in res" :key="result.id" >{{result.name}}</li>
+            <li v-for="result in res" :key="result.id" @click="isShow(result.id)" >{{result.name}}</li>
         </ul>
 
     </v-toolbar>
     
+        <v-dialog v-model="isShowBook" max-width="290">
+        <v-card>
+            <form>
+                <v-card-title class="headline"></v-card-title>
+                <v-card-text>
+                    <v-row>
+                        <v-col>
+                            <v-img :src="'../storage/'+ book.img_src"></v-img>
+                        </v-col>
+                        <v-col>
+                            <v-row>
+                                Назвине книги {{book.name}}
+                            </v-row>
+                            <v-row>
+                                Ее автор {{book.author}}
+                            </v-row>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="green darken-1" @click="isShowBook=false">
+                        Отмена
+                    </v-btn>
+                </v-card-actions>
+            </form>
+        </v-card>
+    </v-dialog>
 </div>
 </template>
 
@@ -29,8 +57,10 @@ export default {
     },
     data: () => ({
         isSearch: false,
+        isShowBook: false,
         keywords: '',
-        res: []
+        res: [],
+        book: '',
     }),
     computed: {
         isLoggedIn: function () {
@@ -44,6 +74,19 @@ export default {
     },
 
     methods: {
+        isShow(id){
+          this.isShowBook=true;
+            var app = this;
+            axios.get('/api/v1/book/' + id)
+                .then(function (resp) {
+                    app.book = resp.data;
+                    console.log(app.book)
+                })
+                .catch(function (resp) {
+                    console.log(resp);
+                    alert("Could not load sections");
+                });
+        },
         logout: function () {
             this.$store.dispatch('logout')
                 .then(() => {
