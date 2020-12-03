@@ -2,6 +2,8 @@
 <ul>
     <li>composer install</li>
     <li>npm install</li>
+    <li>cp .env.example .env</li>
+    <li>php artisan key:generate</li>
     <li>php artisan storage:link</li>
     <li>php artisan jwt:secret</li>
     <li>php artisan migrate:refresh --seed</li>
