@@ -82,15 +82,12 @@ export default {
             var app = this;
             axios.get('/api/v1/books/' + app.sectionId + '/' + app.page)
                 .then(function (resp) {
-                    console.log(resp)
                     app.books = resp.data.books;
                     app.length = resp.data.lenth;
                 })
                 .catch(function (resp) {
-                    console.log(resp);
                     alert("Could not load books");
                 });
-            console.log(id)
         },
     },
 
@@ -99,12 +96,10 @@ export default {
             var app = this;
             axios.get('/api/v1/books/' + app.sectionId + '/' + app.page)
                 .then(function (resp) {
-                    console.log(resp.data.lenth)
                     app.books = resp.data.books;
                     app.length = resp.data.lenth;
                 })
                 .catch(function (resp) {
-                    console.log(resp);
                     alert("Could not load books");
                 });
         },
@@ -117,7 +112,6 @@ export default {
                 app.sections = resp.data;
             })
             .catch(function (resp) {
-                console.log(resp);
                 alert("Could not load books");
             });
         axios.post('/api/auth/me', )
@@ -125,16 +119,13 @@ export default {
                 app.user = resp.data;
             })
             .catch(function (resp) {
-                console.log(resp);
             });
         axios.get('/api/v1/books/' + app.sectionId + '/' + app.page)
             .then(function (resp) {
-                console.log(resp.data.lenth)
                 app.books = resp.data.books;
                 app.length = resp.data.lenth;
             })
             .catch(function (resp) {
-                console.log(resp);
                 alert("Could not load books");
             });
 

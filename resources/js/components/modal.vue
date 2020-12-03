@@ -368,12 +368,9 @@ export default {
             this.isAddBook = true;
             axios.get('/api/v1/section')
                 .then(function (resp) {
-                    console.log('hi',resp)
                     app.sections = resp.data;
                 })
                 .catch(function (resp) {
-                    console.log(resp);
-                    // alert("Could not load sections");
                 });
         },
         saveEditSection() {
@@ -384,7 +381,6 @@ export default {
                     app.isEditSectioning()
                 })
                 .catch(function (resp) {
-                    console.log(resp);
                     alert("Could not load sections");
                 });
         },
@@ -402,7 +398,6 @@ export default {
                     app.section = resp.data;
                 })
                 .catch(function (resp) {
-                    console.log(resp);
                     alert("Could not load sections");
                 });
         },
@@ -452,10 +447,8 @@ export default {
             axios.get('/api/v1/book/' + id)
                 .then(function (resp) {
                     app.book = resp.data;
-                    console.log(app.book)
                 })
                 .catch(function (resp) {
-                    console.log(resp);
                     alert("Could not load sections");
                 });
         },
@@ -469,8 +462,6 @@ export default {
                     app.sections = resp.data;
                 })
                 .catch(function (resp) {
-                    console.log(resp);
-                    // alert("Could not load sections");
                 });
         },
 
@@ -488,11 +479,8 @@ export default {
                         alert("Книга изменена");
                         app.isEditBook = false;
                         clearForm();
-                        // console.log(app.book)
                     })
                     .catch(function (resp) {
-                        console.log(resp);
-                        // alert("Could not load sections");
                     });
             }
 
@@ -513,8 +501,6 @@ export default {
                         clearForm();
                     })
                     .catch(function (resp) {
-                        console.log(resp);
-                        // alert("Could not create your company");
                     });
             }
 
@@ -547,7 +533,6 @@ export default {
 
                     })
                     .catch(function (resp) {
-                        console.log(resp);
                         alert("Could not create your book");
                     });
             }
@@ -561,14 +546,12 @@ export default {
             var app = this;
             axios.delete('/api/v1/books/' + app.idBook)
                 .then(function (resp) {
-                    // app.book.splice(index, 1);
                     app.isDelet = false;
                     alert("Книга удалена");
                 })
                 .catch(function (resp) {
                     alert("Could not delete company");
                 });
-            // console.log(id);
 
         }
 

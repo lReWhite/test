@@ -2563,11 +2563,8 @@ __webpack_require__.r(__webpack_exports__);
           keywords: this.keywords
         }
       }).then(function (resp) {
-        app.res = resp.data; // app.isEditSectioning()
-      }) // (response =>
-      //  app.res = reponse.data
-      //  )
-      ["catch"](function (error) {});
+        app.res = resp.data;
+      })["catch"](function (error) {});
     }
   }
 });
@@ -2623,7 +2620,6 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_modal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../components/modal */ "./resources/js/components/modal.vue");
-//
 //
 //
 //
@@ -2814,7 +2810,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-// <div v-if="!$v.user.email.email">Обязательнео поле</div>
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -2969,7 +2964,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.content {\r\n    overflow-x: hidden;\r\n    /* max-height: calc(100% - 110px); */\r\n    height: calc(100vh - 120px);\r\n    overflow-y: auto;\r\n    margin-top: 1%;\n}\n.user-cols {\r\n    margin-left: 1%;\n}\n.v-card {\r\n    padding: 5%;\r\n    margin-bottom: 2%;\n}\n.v-pagination__item:focus {\r\n    border: none;\r\n    outline: none;\n}\r\n", ""]);
+exports.push([module.i, "\n.content {\r\n    overflow-x: hidden;\r\n    height: calc(100vh - 120px);\r\n    overflow-y: auto;\r\n    margin-top: 1%;\n}\n.user-cols {\r\n    margin-left: 1%;\n}\n.v-card {\r\n    padding: 5%;\r\n    margin-bottom: 2%;\n}\n.v-pagination__item:focus {\r\n    border: none;\r\n    outline: none;\n}\r\n", ""]);
 
 // exports
 
@@ -43116,7 +43111,6 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
           data: user,
           method: 'POST'
         }).then(function (resp) {
-          console.log(resp);
           var token = resp.headers.authorization;
           var user = resp.data.user;
           localStorage.setItem('token', token);

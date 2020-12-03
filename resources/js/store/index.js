@@ -79,3 +79,5 @@ export default new Vuex.Store({
     authStatus: state => state.status,
   }
 })
+
+
